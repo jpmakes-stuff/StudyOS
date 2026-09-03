@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://jpmakes-stuff.github.io/StudyOS/sitemap.xml
