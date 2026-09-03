@@ -1,0 +1,4149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta name="robots" content="index, follow">
+  <meta name="googlebot" content="index, follow">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>StudyOS - Your Productive Workspace</title>
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="StudyOS — Your Personal Student Workspace">
+<meta property="og:description"
+      content="A modern workspace designed to bring your studying, organization, creativity, and productivity together.">
+<meta property="og:image" content="og-image.png">
+
+<!-- Twitter / X -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="StudyOS — Your Personal Student Workspace">
+<meta name="twitter:description"
+      content="A modern workspace designed for students.">
+<meta name="twitter:image" content="og-image.png">
+
+
+  <link rel="icon" type="image/png" href="images.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    /* ============================= TOKENS ============================= */
+    :root {
+      --accent: #6C5CE7;
+      --accent-2: #00D4AA;
+      --accent-rgb: 108, 92, 231;
+      --bg: #0E1015;
+      --surface: #181B22;
+      --surface-2: #20242D;
+      --surface-3: #282D38;
+      --border: #31374350;
+      --text: #EDEEF2;
+      --text-dim: #9AA0AE;
+      --text-faint: #666C7A;
+      --danger: #FF6B6B;
+      --good: #00D4AA;
+      --warn: #FFB454;
+      --radius-sm: 8px;
+      --radius: 14px;
+      --radius-lg: 20px;
+      --dur: 180ms;
+      --ease: cubic-bezier(.2, .8, .2, 1);
+      --wallpaper: radial-gradient(circle at 20% 15%, #3a2f7a 0%, transparent 45%),
+        radial-gradient(circle at 85% 80%, #0f5c52 0%, transparent 50%),
+        linear-gradient(160deg, #14121f 0%, #0b0d13 60%, #0a0e14 100%);
+      --wallpaper-img: none;
+      --glass: rgba(24, 27, 34, .72);
+      --glass-strong: rgba(24, 27, 34, .9);
+      --glass-solid: rgba(24, 27, 34, .96);
+      --glass-solid-strong: rgba(20, 22, 28, .98);
+    }
+
+    .perf-mode {
+      --dur: 0ms;
+    }
+
+    /* Pastel light theme — the default StudyOS look */
+    body.light-mode {
+      --bg: #F8F0F7;
+      --surface: #FCF6FB;
+      --surface-2: #F4E7F2;
+      --surface-3: #E9D7E8;
+      --border: rgba(122, 86, 128, .18);
+      --text: #4B3B4F;
+      --text-dim: #806E84;
+      --text-faint: #A895AB;
+      --accent: #C795C9;
+      --accent-2: #9FC8DA;
+      --glass: rgba(252, 246, 251, .78);
+      --glass-strong: rgba(252, 246, 251, .92);
+      --glass-solid: rgba(252, 246, 251, .98);
+      --glass-solid-strong: rgba(248, 240, 247, .99);
+      --wallpaper: radial-gradient(circle at 15% 15%, #E8CBE4 0%, transparent 42%),
+        radial-gradient(circle at 86% 78%, #CFE6EF 0%, transparent 45%),
+        linear-gradient(145deg, #F8EEF7 0%, #EEF6F8 100%);
+    }
+
+    body.light-mode .icon-label {
+      text-shadow: 0 1px 4px rgba(255, 255, 255, .75);
+    }
+
+    .perf-mode *,
+    .perf-mode *::before,
+    .perf-mode *::after {
+      animation-duration: 0ms !important;
+      animation-delay: 0ms !important;
+      transition-duration: 0ms !important;
+      transition-delay: 0ms !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+
+    body.light-mode .icon-label {
+      text-shadow: 0 1px 3px rgba(255, 255, 255, .6);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      font-family: 'Inter', system-ui, sans-serif;
+      color: var(--text);
+      background: #000;
+      user-select: none;
+    }
+
+    input,
+    textarea,
+    button,
+    select {
+      font-family: inherit;
+      color: inherit;
+    }
+
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #ffffff22;
+      border-radius: 8px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #ffffff3a;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      background: none;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* brightness overlay */
+    #brightness-overlay {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 99998;
+    }
+
+    /* ============================= LOCK SCREEN ============================= */
+    #lock-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: var(--wallpaper-img), var(--wallpaper);
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 420ms var(--ease), filter 420ms var(--ease);
+    }
+
+    #lock-screen.unlocking {
+      opacity: 0;
+      filter: blur(12px);
+      pointer-events: none;
+    }
+
+    .lock-clock {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 300;
+      font-size: 96px;
+      letter-spacing: -2px;
+      line-height: 1;
+    }
+
+    .lock-date {
+      color: var(--text-dim);
+      font-size: 16px;
+      margin-top: 6px;
+      font-weight: 500;
+    }
+
+    .lock-card {
+      margin-top: 56px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      width: 300px;
+    }
+
+    .avatar {
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      font-weight: 600;
+      color: #fff;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, .4);
+      background-size: cover;
+      background-position: center;
+    }
+
+    .lock-name {
+      font-weight: 600;
+      font-size: 18px;
+    }
+
+    .lock-pass-row {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+    }
+
+    #lock-pass {
+      flex: 1;
+      padding: 12px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #ffffff10;
+      backdrop-filter: blur(10px);
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+    }
+
+    #lock-pass:focus {
+      border-color: var(--accent);
+    }
+
+    .lock-go {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+      transition: transform var(--dur) var(--ease), background var(--dur);
+    }
+
+    .lock-go:hover {
+      transform: scale(1.06);
+    }
+
+    .lock-error {
+      color: var(--danger);
+      font-size: 13px;
+      height: 16px;
+    }
+
+    .lock-switch {
+      color: var(--text-dim);
+      font-size: 13px;
+      margin-top: 2px;
+    }
+
+    .lock-switch button {
+      color: var(--accent-2);
+      font-weight: 600;
+    }
+
+    /* Setup / create-account flow */
+    #setup-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 9998;
+      background: var(--wallpaper);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .setup-card {
+      width: 420px;
+      max-width: 92vw;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, .5);
+    }
+
+    .setup-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 26px;
+      font-weight: 600;
+      margin: 0 0 4px;
+    }
+
+    .setup-sub {
+      color: var(--text-dim);
+      font-size: 14px;
+      margin: 0 0 24px;
+    }
+
+    .setup-step {
+      display: none;
+    }
+
+    .setup-step.active {
+      display: block;
+    }
+
+    .field-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-dim);
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .field-input {
+      width: 100%;
+      padding: 11px 13px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+      margin-bottom: 16px;
+    }
+
+    .field-input:focus {
+      border-color: var(--accent);
+    }
+
+    .avatar-picker {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .avatar-opt {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #fff;
+      font-size: 18px;
+      border: 2px solid transparent;
+      cursor: pointer;
+    }
+
+    .avatar-opt.selected {
+      border-color: #fff;
+    }
+
+    .avatar-upload {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      border: 2px dashed var(--text-faint);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-faint);
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .color-picker {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .color-opt {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer;
+    }
+
+    .color-opt.selected {
+      border-color: #fff;
+      transform: scale(1.1);
+    }
+
+    .btn {
+      padding: 11px 20px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 14px;
+      transition: transform var(--dur) var(--ease), opacity var(--dur);
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .btn-ghost {
+      background: var(--surface-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .setup-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+    }
+
+    .setup-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .setup-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--border);
+    }
+
+    .setup-dot.active {
+      background: var(--accent);
+      width: 18px;
+      border-radius: 4px;
+      transition: all var(--dur) var(--ease);
+    }
+
+    /* ============================= DESKTOP ============================= */
+    #desktop {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    #wallpaper {
+      position: absolute;
+      inset: 0;
+      background-image: var(--wallpaper-img), var(--wallpaper);
+      background-size: cover;
+      background-position: center;
+      z-index: 0;
+    }
+
+    #icons-grid {
+      position: absolute;
+      inset: 16px 16px 74px 16px;
+      z-index: 1;
+      overflow: visible;
+    }
+
+    .desk-icon {
+      position: absolute;
+      width: 86px;
+      height: 96px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 4px;
+      border-radius: var(--radius-sm);
+      text-align: center;
+      transition: background var(--dur), transform var(--dur) var(--ease);
+      touch-action: none;
+    }
+
+    .desk-icon:hover {
+      background: #ffffff10;
+    }
+
+    .desk-icon.dragging {
+      z-index: 60;
+      background: #ffffff18;
+      transform: scale(1.05);
+    }
+
+    .icon-glyph {
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, .4), inset 0 1px 0 rgba(255, 255, 255, .25);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .icon-glyph svg {
+      position: relative;
+      z-index: 1;
+      filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .25));
+    }
+
+    .icon-glyph::after {
+      content: "";
+      position: absolute;
+      top: -40%;
+      left: -20%;
+      width: 80%;
+      height: 80%;
+      background: radial-gradient(circle, rgba(255, 255, 255, .35), transparent 70%);
+      transform: rotate(20deg);
+    }
+
+    .icon-label {
+      font-size: 11.5px;
+      font-weight: 500;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, .7);
+      line-height: 1.2;
+    }
+
+    #windows-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    #windows-layer>* {
+      pointer-events: auto;
+    }
+
+    /* Window chrome */
+    .win {
+      position: absolute;
+      min-width: 340px;
+      min-height: 220px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, .45);
+      display: flex;
+      flex-direction: column;
+      transition: box-shadow var(--dur);
+    }
+
+    .win.focused {
+      box-shadow: 0 30px 80px rgba(0, 0, 0, .6), 0 0 0 1px rgba(var(--accent-rgb), .4);
+    }
+
+    .win.maxed {
+      border-radius: 0;
+    }
+
+    .win-titlebar {
+      height: 42px;
+      display: flex;
+      align-items: center;
+      padding: 0 10px 0 14px;
+      gap: 8px;
+      background: var(--surface-2);
+      flex-shrink: 0;
+      cursor: grab;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .win-titlebar:active {
+      cursor: grabbing;
+    }
+
+    .win-icon-mini {
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .win-title {
+      font-size: 13px;
+      font-weight: 600;
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .win-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      color: var(--text-dim);
+      transition: background var(--dur), color var(--dur);
+    }
+
+    .win-btn:hover {
+      background: var(--surface-3);
+      color: var(--text);
+    }
+
+    .win-btn.close:hover {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    .win-body {
+      flex: 1;
+      overflow: auto;
+      position: relative;
+      background: var(--surface);
+    }
+
+    .win-resize {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      width: 16px;
+      height: 16px;
+      cursor: nwse-resize;
+    }
+
+    /* ============================= TASKBAR ============================= */
+    #taskbar {
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      bottom: 10px;
+      height: 52px;
+      z-index: 20;
+      pointer-events: none;
+    }
+
+    .tb-left,
+    .tb-center,
+    .tb-right {
+      position: absolute;
+      bottom: 0;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .tb-left {
+      left: 0;
+    }
+
+    .tb-center {
+      left: 50%;
+      transform: translateX(-50%);
+      gap: 10px;
+    }
+
+    .tb-right {
+      right: 0;
+      gap: 8px;
+    }
+
+    .tb-left>*,
+    .tb-center>*,
+    .tb-right>* {
+      pointer-events: auto;
+    }
+
+    .tb-cluster {
+      height: 52px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 0 7px;
+      background: var(--glass);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 26px;
+      box-shadow: 0 10px 30px rgba(50, 30, 60, .16);
+    }
+
+    .perf-mode .tb-cluster {
+      background: var(--glass-solid);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      box-shadow: 0 6px 16px rgba(50, 30, 60, .12);
+    }
+
+    .tb-start {
+      height: 40px;
+      padding: 0 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 20px;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 700;
+      background: var(--surface-2);
+      cursor: pointer;
+      transition: transform var(--dur) var(--ease), background var(--dur);
+    }
+
+    .tb-start:hover {
+      background: var(--surface-3);
+      transform: translateY(-2px);
+    }
+
+    .start-mark {
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .tb-dock {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      min-height: 40px;
+    }
+
+    .tb-dock-item {
+      width: 40px;
+      height: 40px;
+      border-radius: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 5px 14px rgba(0, 0, 0, .10);
+      transition: transform var(--dur) var(--ease), filter var(--dur);
+      overflow: hidden;
+    }
+
+    .tb-dock-item:hover {
+      transform: translateY(-4px) scale(1.04);
+      filter: saturate(1.06);
+    }
+
+    .tb-dock-item svg {
+      display: block;
+    }
+
+    #now-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      height: 40px;
+      width: 180px;
+      padding: 0 11px;
+      background: var(--glass);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      cursor: pointer;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(50, 30, 60, .14);
+      transition: width 220ms var(--ease), transform 180ms var(--ease), background 180ms;
+    }
+
+    #now-pill:hover {
+      width: 340px;
+      transform: translateY(-2px);
+      background: var(--glass-strong);
+    }
+
+    #now-pill .pill-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent-2);
+      flex: 0 0 auto;
+    }
+
+    #now-pill.pulse .pill-dot {
+      animation: pillpulse 1.6s ease-in-out infinite;
+    }
+
+    #now-pill-text {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    #now-pill-sub {
+      font-size: 9.5px;
+      color: var(--text-dim);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .pill-info {
+      min-width: 0;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .pill-controls {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      opacity: 0;
+      transform: translateX(8px);
+      pointer-events: none;
+      transition: opacity 150ms ease, transform 180ms var(--ease);
+    }
+
+    #now-pill:hover .pill-controls {
+      opacity: 1;
+      transform: translateX(0);
+      pointer-events: auto;
+    }
+
+    .pill-controls button {
+      width: 27px;
+      height: 27px;
+      border-radius: 50%;
+      background: var(--surface-2);
+      color: var(--text);
+      font-size: 10px;
+    }
+
+    .pill-controls button:hover {
+      background: var(--surface-3);
+      transform: scale(1.08);
+    }
+
+    @keyframes pillpulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: .35;
+      }
+    }
+
+    .tb-clock {
+      min-width: 78px;
+      height: 40px;
+      padding: 0 13px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: right;
+      line-height: 1.15;
+      cursor: pointer;
+      border-radius: 18px;
+    }
+
+    .tb-clock:hover {
+      background: var(--surface-3);
+    }
+
+    .tb-clock small {
+      display: block;
+      font-weight: 500;
+      color: var(--text-dim);
+      font-size: 10.5px;
+    }
+
+    .tb-fullscreen {
+      width: 40px;
+      height: 40px;
+      border-radius: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface-2);
+      color: var(--text);
+      font-size: 19px;
+      cursor: pointer;
+      transition: transform var(--dur) var(--ease), background var(--dur);
+    }
+
+    .tb-fullscreen:hover {
+      background: var(--surface-3);
+      transform: translateY(-2px);
+    }
+
+    .perf-mode #now-pill {
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      box-shadow: none;
+    }
+
+    .perf-mode #now-pill.pulse .pill-dot {
+      animation: none;
+    }
+
+    .perf-mode #now-pill:hover {
+      transform: none;
+    }
+
+    /* ============================= START MENU ============================= */
+    #start-menu {
+      position: absolute;
+      left: 16px;
+      bottom: 74px;
+      transform: translateY(12px);
+      z-index: 30;
+      width: 560px;
+      max-width: 92vw;
+      max-height: 66vh;
+      background: var(--glass-strong);
+      backdrop-filter: blur(24px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, .4);
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
+    }
+
+    .perf-mode #start-menu {
+      backdrop-filter: none;
+      background: var(--glass-solid-strong);
+    }
+
+    #start-menu.open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    #start-search {
+      width: 100%;
+      padding: 11px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      outline: none;
+      font-size: 13.5px;
+      margin-bottom: 16px;
+    }
+
+    #start-search:focus {
+      border-color: var(--accent);
+    }
+
+    .start-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      max-height: 280px;
+      overflow: auto;
+    }
+
+    .start-app {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 6px;
+      border-radius: var(--radius-sm);
+      transition: background var(--dur);
+    }
+
+    .start-app:hover {
+      background: #ffffff0c;
+    }
+
+    .start-app .icon-glyph {
+      width: 44px;
+      height: 44px;
+    }
+
+    .start-app-label {
+      font-size: 11.5px;
+      font-weight: 500;
+      text-align: center;
+    }
+
+    .start-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+
+    .start-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .start-user .avatar {
+      width: 32px;
+      height: 32px;
+      font-size: 13px;
+    }
+
+    /* ============================= CONTROL CENTER ============================= */
+    #control-center {
+      position: absolute;
+      right: 12px;
+      bottom: 74px;
+      z-index: 30;
+      width: 340px;
+      max-height: 70vh;
+      overflow: auto;
+      background: var(--glass-strong);
+      backdrop-filter: blur(24px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, .4);
+      padding: 18px;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(12px);
+      transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
+    }
+
+    .perf-mode #control-center {
+      backdrop-filter: none;
+      background: var(--glass-solid-strong);
+    }
+
+    #control-center.open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    .cc-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      margin: 14px 0 8px;
+    }
+
+    .cc-section-title:first-child {
+      margin-top: 0;
+    }
+
+    .cc-cal {
+      background: var(--surface-2);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+    }
+
+    .cc-cal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .cc-cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 3px;
+      font-size: 11px;
+      text-align: center;
+    }
+
+    .cc-cal-grid .dow {
+      color: var(--text-faint);
+      font-weight: 600;
+      padding-bottom: 4px;
+    }
+
+    .cc-cal-grid .day {
+      padding: 4px 0;
+      border-radius: 6px;
+    }
+
+    .cc-cal-grid .day.today {
+      background: var(--accent);
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .cc-slider-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+
+    .cc-slider-row input[type=range] {
+      flex: 1;
+      accent-color: var(--accent);
+    }
+
+    .cc-toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9px 0;
+      font-size: 13px;
+    }
+
+    .switch {
+      width: 38px;
+      height: 22px;
+      border-radius: 12px;
+      background: var(--surface-3);
+      position: relative;
+      transition: background var(--dur);
+    }
+
+    .switch.on {
+      background: var(--accent);
+    }
+
+    .switch::after {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #fff;
+      transition: transform var(--dur) var(--ease);
+    }
+
+    .switch.on::after {
+      transform: translateX(16px);
+    }
+
+    .cc-notif {
+      background: var(--surface-2);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      font-size: 12.5px;
+      margin-bottom: 6px;
+    }
+
+    .cc-notif .t {
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .cc-notif .d {
+      color: var(--text-dim);
+    }
+
+    .cc-empty {
+      color: var(--text-faint);
+      font-size: 12.5px;
+      padding: 8px 0;
+    }
+
+    /* ============================================================= */
+    .app-pad {
+      padding: 18px;
+      height: 100%;
+      overflow: auto;
+      box-sizing: border-box;
+    }
+
+    .app-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      background: var(--surface-2);
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+
+    .tbtn {
+      min-width: 30px;
+      height: 30px;
+      padding: 0 8px;
+      border-radius: 7px;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      color: var(--text-dim);
+      transition: background var(--dur), color var(--dur);
+    }
+
+    .tbtn:hover {
+      background: var(--surface-3);
+      color: var(--text);
+    }
+
+    .tbtn.active {
+      background: rgba(var(--accent-rgb), .25);
+      color: var(--text);
+    }
+
+    .tsep {
+      width: 1px;
+      height: 20px;
+      background: var(--border);
+      margin: 0 4px;
+    }
+
+    .app-flex {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .app-body-scroll {
+      flex: 1;
+      overflow: auto;
+    }
+
+    input.plain,
+    textarea.plain,
+    select.plain {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 9px 11px;
+      font-size: 13.5px;
+      outline: none;
+      color: var(--text);
+    }
+
+    input.plain:focus,
+    textarea.plain:focus,
+    select.plain:focus {
+      border-color: var(--accent);
+    }
+
+    .small-btn {
+      padding: 7px 13px;
+      border-radius: 8px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 12.5px;
+      font-weight: 600;
+    }
+
+    .small-btn.ghost {
+      background: var(--surface-3);
+      color: var(--text);
+    }
+
+    .card-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .empty-hint {
+      color: var(--text-faint);
+      font-size: 13px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .swatch {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .swatch.selected {
+      border-color: var(--accent);
+    }
+
+    /* Notes/Docs app */
+    #docs-editor {
+      flex: 1;
+      overflow: auto;
+      padding: 40px 60px;
+      outline: none;
+      font-size: 15px;
+      line-height: 1.7;
+      max-width: 760px;
+      margin: 0 auto;
+      background: #1c1f26;
+      color: #e8e8ef;
+    }
+
+    #docs-editor h1 {
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .docs-doclist {
+      width: 220px;
+      border-right: 1px solid var(--border);
+      overflow: auto;
+      background: var(--surface-2);
+      flex-shrink: 0;
+    }
+
+    .doc-item {
+      padding: 11px 14px;
+      font-size: 12.5px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+    }
+
+    .doc-item:hover {
+      background: var(--surface-3);
+    }
+
+    .doc-item.active {
+      background: rgba(var(--accent-rgb), .2);
+      font-weight: 600;
+    }
+
+    .docs-editor-wrap {
+      flex: 1;
+      overflow: auto;
+      background: var(--surface);
+    }
+
+    .bg-bar {
+      display: none;
+      gap: 8px;
+      padding: 8px 12px;
+      background: var(--surface-3);
+      border-bottom: 1px solid var(--border);
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .bg-bar.show {
+      display: flex;
+    }
+
+    /* Slides */
+    .slides-wrap {
+      display: flex;
+      height: 100%;
+    }
+
+    .slide-list {
+      width: 150px;
+      background: var(--surface-2);
+      overflow: auto;
+      padding: 10px;
+      flex-shrink: 0;
+      border-right: 1px solid var(--border);
+    }
+
+    .slide-thumb {
+      aspect-ratio: 16/9;
+      background: #fff;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      color: #111;
+      font-size: 9px;
+      padding: 4px;
+      text-align: center;
+    }
+
+    .slide-thumb.active {
+      border-color: var(--accent);
+    }
+
+    .slide-canvas-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #12141a;
+      padding: 24px;
+    }
+
+    .slide-canvas {
+      position: relative;
+      width: 100%;
+      max-width: 760px;
+      aspect-ratio: 16/9;
+      background: #fff;
+      color: #111;
+      border-radius: 8px;
+      padding: 36px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, .5);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow: hidden;
+    }
+
+    .slide-canvas h2[contenteditable] {
+      margin: 0;
+      outline: none;
+      font-family: 'Space Grotesk', sans-serif;
+      position: relative;
+      z-index: 2;
+    }
+
+    .slide-canvas div[contenteditable] {
+      outline: none;
+      flex: 1;
+      font-size: 15px;
+      line-height: 1.5;
+      position: relative;
+      z-index: 2;
+    }
+
+    .slide-el {
+      position: absolute;
+    }
+
+    .slide-el img {
+      display: block;
+    }
+
+    /* Sheets */
+    .sheet-wrap {
+      overflow: auto;
+      height: 100%;
+    }
+
+    table.sheet {
+      border-collapse: collapse;
+      width: max-content;
+    }
+
+    table.sheet td,
+    table.sheet th {
+      border: 1px solid var(--border);
+      min-width: 90px;
+    }
+
+    table.sheet th {
+      background: var(--surface-2);
+      font-size: 11px;
+      color: var(--text-dim);
+      padding: 4px;
+    }
+
+    table.sheet td input {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: transparent;
+      color: var(--text);
+      padding: 6px 8px;
+      font-size: 12.5px;
+      outline: none;
+    }
+
+    table.sheet td input:focus {
+      background: rgba(var(--accent-rgb), .15);
+    }
+
+    table.sheet th.rownum {
+      width: 34px;
+      min-width: 34px;
+    }
+
+    /* Music */
+    .music-wrap {
+      display: flex;
+      height: 100%;
+      flex-direction: column;
+    }
+
+    .music-drop {
+      margin: 14px 16px 8px;
+      padding: 20px;
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 13px;
+    }
+
+    .music-drop.drag {
+      border-color: var(--accent);
+      color: var(--text);
+      background: rgba(var(--accent-rgb), .08);
+    }
+
+    .music-playlists {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 16px 10px;
+    }
+
+    .track {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 16px;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+
+    .track:hover {
+      background: var(--surface-2);
+    }
+
+    .track.playing {
+      color: var(--accent-2);
+      font-weight: 600;
+    }
+
+    .track .fav {
+      margin-left: auto;
+      opacity: .6;
+    }
+
+    .track .fav.on {
+      opacity: 1;
+      color: var(--warn);
+    }
+
+    .music-player-bar {
+      padding: 12px 18px;
+      background: var(--surface-2);
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .music-controls-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .play-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .skip-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--surface-3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    .seek-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 10.5px;
+      color: var(--text-dim);
+    }
+
+    .seek-row input[type=range] {
+      flex: 1;
+      accent-color: var(--accent);
+    }
+
+    /* Journal / Habits */
+    .habit-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .habit-check {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    .habit-check.done {
+      background: var(--good);
+      border-color: var(--good);
+      color: #0b0f0d;
+    }
+
+    .habit-bar-wrap {
+      height: 8px;
+      background: var(--surface-3);
+      border-radius: 4px;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .habit-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    }
+
+    .journal-history-item {
+      padding: 9px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .journal-history-item:hover {
+      background: var(--surface-2);
+    }
+
+    .journal-history-item.active {
+      background: rgba(var(--accent-rgb), .2);
+    }
+
+    .journal-history-item .jhd {
+      font-weight: 700;
+    }
+
+    .journal-history-item .jhp {
+      color: var(--text-dim);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .heat-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+
+    .heat-cell {
+      aspect-ratio: 1;
+      border-radius: 4px;
+      background: var(--surface-3);
+      font-size: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-faint);
+    }
+
+    .month-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      margin-bottom: 6px;
+    }
+
+    .month-bar-row .mlabel {
+      width: 32px;
+      color: var(--text-dim);
+      flex-shrink: 0;
+    }
+
+    .month-bar-track {
+      flex: 1;
+      height: 14px;
+      background: var(--surface-3);
+      border-radius: 7px;
+      overflow: hidden;
+    }
+
+    .month-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    }
+
+    .dash-card {
+      background: var(--surface-2);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .ring {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    /* Calendar app */
+    .cal-month-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+    }
+
+    .cal-month-grid .dow {
+      text-align: center;
+      font-size: 11px;
+      color: var(--text-faint);
+      font-weight: 700;
+      padding-bottom: 4px;
+    }
+
+    .cal-cell {
+      min-height: 76px;
+      background: var(--surface-2);
+      border-radius: 8px;
+      padding: 6px;
+      font-size: 11px;
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+
+    .cal-cell.today {
+      border-color: var(--accent);
+    }
+
+    .cal-cell.other {
+      opacity: .35;
+    }
+
+    .cal-cell .dnum {
+      font-weight: 700;
+      margin-bottom: 3px;
+    }
+
+    .cal-evt {
+      background: rgba(var(--accent-rgb), .3);
+      border-radius: 4px;
+      padding: 1px 4px;
+      margin-bottom: 2px;
+      font-size: 9.5px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* Flashcards */
+    .fc-deck-card {
+      background: var(--surface-2);
+      border-radius: var(--radius);
+      padding: 16px;
+      width: 150px;
+      cursor: pointer;
+      border: 1px solid var(--border);
+    }
+
+    .fc-deck-card:hover {
+      border-color: var(--accent);
+    }
+
+    .flip-card {
+      width: 100%;
+      max-width: 420px;
+      aspect-ratio: 5/3;
+      margin: 20px auto;
+      perspective: 1000px;
+    }
+
+    .flip-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 420ms var(--ease);
+      transform-style: preserve-3d;
+    }
+
+    .perf-mode .flip-inner {
+      transition: none;
+    }
+
+    .flip-card.flipped .flip-inner {
+      transform: rotateY(180deg);
+    }
+
+    .flip-face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .flip-back {
+      transform: rotateY(180deg);
+    }
+
+    /* Sticky notes */
+    #sticky-board {
+      position: relative;
+      height: 100%;
+      overflow: auto;
+      padding: 16px;
+    }
+
+    .sticky {
+      width: 190px;
+      min-height: 150px;
+      border-radius: 10px;
+      padding: 12px;
+      position: relative;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, .3);
+      display: inline-block;
+      margin: 0 12px 12px 0;
+      vertical-align: top;
+    }
+
+    .sticky textarea {
+      width: 100%;
+      height: 110px;
+      background: transparent;
+      border: none;
+      outline: none;
+      resize: none;
+      font-size: 13px;
+      color: #151515;
+      font-family: inherit;
+    }
+
+    .sticky .sdel {
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      font-size: 12px;
+      color: #00000066;
+    }
+
+    /* Clock app */
+    .clock-tabs {
+      display: flex;
+      gap: 6px;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .pomodoro-ring {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      margin: 24px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      background: conic-gradient(var(--accent) calc(var(--pct, 100)*1%), var(--surface-3) 0);
+    }
+
+    .pomodoro-ring::before {
+      content: "";
+      position: absolute;
+      inset: 10px;
+      border-radius: 50%;
+      background: var(--surface);
+    }
+
+    .pomodoro-time {
+      position: relative;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 38px;
+      font-weight: 600;
+    }
+
+    /* Scientific keyboard */
+    #sci-panel {
+      position: fixed;
+      right: 14px;
+      top: 60px;
+      z-index: 40;
+      width: 230px;
+      background: var(--glass-strong);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .5);
+      display: none;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+
+    #sci-panel.show {
+      display: grid;
+    }
+
+    #sci-panel .sci-head {
+      grid-column: 1/-1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-dim);
+      margin-bottom: 4px;
+    }
+
+    .sci-key {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 9px 0;
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .sci-key:hover {
+      background: var(--surface-3);
+    }
+
+    /* Browser app */
+    .browser-bar {
+      display: flex;
+      gap: 8px;
+      padding: 10px 14px;
+      background: var(--surface-2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .browser-bar input {
+      flex: 1;
+    }
+
+    iframe.browser-frame {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: #fff;
+    }
+
+    /* Settings */
+    .settings-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .settings-label {
+      font-size: 13.5px;
+      font-weight: 600;
+    }
+
+    .settings-desc {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-top: 2px;
+    }
+
+    .wallpaper-opt {
+      width: 70px;
+      height: 44px;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      background-size: cover;
+      background-position: center;
+      flex-shrink: 0;
+    }
+
+    .wallpaper-opt.selected {
+      border-color: var(--accent);
+    }
+
+    .custom-color-label {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      padding: 2px;
+      border: 2px solid var(--border);
+      background: var(--surface-2);
+      cursor: pointer;
+      display: block;
+      overflow: hidden;
+    }
+
+    .custom-color-label input {
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      border: 0;
+      background: none;
+      cursor: pointer;
+      border-radius: 50%;
+    }
+
+    @media (max-width:720px) {
+
+      #start-menu,
+      #control-center {
+        width: 94vw;
+      }
+
+      .start-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+  </style>
+</head>
+
+<body class="light-mode">
+
+  <div id="brightness-overlay"></div>
+
+  <!-- ============ SETUP (create account) ============ -->
+  <div id="setup-screen">
+    <div class="setup-card">
+      <div id="setup-step-1" class="setup-step active">
+        <h1 class="setup-title">Welcome to StudyOS</h1>
+        <p class="setup-sub">Let's set up your account. This runs entirely in your browser.</p>
+        <label class="field-label">Your name</label>
+        <input class="field-input" id="su-name" placeholder="e.g. Amina" maxlength="24">
+        <label class="field-label">Password</label>
+        <input class="field-input" id="su-pass" type="password" placeholder="Choose a password">
+        <div class="setup-actions">
+          <span></span>
+          <button class="btn btn-primary" onclick="setupNext(2)">Continue</button>
+        </div>
+      </div>
+
+      <div id="setup-step-2" class="setup-step">
+        <h1 class="setup-title">Pick your avatar</h1>
+        <p class="setup-sub">Choose a style, or upload your own picture.</p>
+        <div class="avatar-picker" id="avatar-picker"></div>
+        <input type="file" id="avatar-upload-input" accept="image/*" class="hidden">
+        <div class="setup-actions">
+          <button class="btn btn-ghost" onclick="setupNext(1)">Back</button>
+          <button class="btn btn-primary" onclick="setupNext(3)">Continue</button>
+        </div>
+      </div>
+
+      <div id="setup-step-3" class="setup-step">
+        <h1 class="setup-title">Make it yours</h1>
+        <p class="setup-sub">Pick an accent color for your desktop. You can change this anytime.</p>
+        <div class="color-picker" id="color-picker"></div>
+        <div class="setup-actions">
+          <button class="btn btn-ghost" onclick="setupNext(2)">Back</button>
+          <button class="btn btn-primary" onclick="finishSetup()">Create account</button>
+        </div>
+      </div>
+
+      <div class="setup-dots" style="justify-content:center; margin-top:22px;">
+        <div class="setup-dot active" id="dot-1"></div>
+        <div class="setup-dot" id="dot-2"></div>
+        <div class="setup-dot" id="dot-3"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ LOCK SCREEN ============ -->
+  <div id="lock-screen" class="hidden">
+    <div class="lock-clock" id="lock-clock">--:--</div>
+    <div class="lock-date" id="lock-date">--</div>
+    <div class="lock-card">
+      <div class="avatar" id="lock-avatar"></div>
+      <div class="lock-name" id="lock-name"></div>
+      <div class="lock-pass-row">
+        <input id="lock-pass" type="password" placeholder="Password" onkeydown="if(event.key==='Enter')tryUnlock()">
+        <button class="lock-go" onclick="tryUnlock()">→</button>
+      </div>
+      <div class="lock-error" id="lock-error"></div>
+    </div>
+  </div>
+
+  <!-- ============ DESKTOP ============ -->
+  <div id="desktop" class="hidden">
+    <div id="wallpaper"></div>
+    <div id="icons-grid"></div>
+    <div id="windows-layer"></div>
+
+    <div id="start-menu">
+      <input id="start-search" placeholder="Search apps..." oninput="renderStartGrid(this.value)">
+      <div class="start-grid" id="start-grid"></div>
+      <div class="start-footer">
+        <div class="start-user">
+          <div class="avatar" id="start-avatar"></div>
+          <span id="start-username"></span>
+        </div>
+        <button class="small-btn ghost" onclick="lockNow()">Lock</button>
+      </div>
+    </div>
+
+    <div id="control-center">
+      <div class="cc-section-title">Calendar</div>
+      <div class="cc-cal" id="cc-cal"></div>
+
+      <div class="cc-section-title">Quick settings</div>
+      <div class="cc-slider-row">🔆<input type="range" id="brightness-slider" min="30" max="100" value="100"
+          oninput="setBrightness(this.value)"></div>
+      <div class="cc-slider-row">🔊<input type="range" id="volume-slider" min="0" max="100" value="70"
+          oninput="setVolume(this.value)"></div>
+      <div class="cc-toggle-row">
+        <span>Performance mode</span>
+        <div class="switch" id="perf-switch" onclick="togglePerf()"></div>
+      </div>
+
+      <div class="cc-section-title">Notifications</div>
+      <div id="cc-notifs"></div>
+    </div>
+
+    <div id="sci-panel">
+      <div class="sci-head"><span>Scientific keys</span><span style="cursor:pointer" onclick="toggleSci(false)">✕</span>
+      </div>
+    </div>
+
+    <div id="taskbar">
+
+      <!-- LEFT: START -->
+      <div class="tb-left">
+        <div class="tb-cluster">
+          <div class="tb-start" onclick="toggleStart()">
+            <span class="start-mark">⌂</span>Desktop
+          </div>
+        </div>
+      </div>
+
+      <!-- CENTER: APP DOCK + NOW BAR -->
+      <div class="tb-center">
+
+        <div class="tb-cluster">
+          <div class="tb-dock" id="tb-dock"></div>
+        </div>
+
+        <div id="now-pill" onclick="toggleControlCenter()">
+          <span class="pill-dot"></span>
+          <div class="pill-info">
+            <span id="now-pill-text">All caught up</span>
+            <span id="now-pill-sub">Nothing playing</span>
+          </div>
+          <div class="pill-controls">
+            <button id="pill-prev" title="Previous" onclick="event.stopPropagation();musicPrev();">⏮</button>
+            <button id="pill-play" title="Play / Pause"
+              onclick="event.stopPropagation();togglePillPlayback();">▶</button>
+            <button id="pill-next" title="Next" onclick="event.stopPropagation();musicNext();">⏭</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT: CLOCK -->
+      <div class="tb-right">
+        <div class="tb-cluster">
+          <button class="tb-fullscreen" id="tb-fullscreen" onclick="toggleFullscreen()" title="Fullscreen">⛶</button>
+          <div class="tb-clock" onclick="toggleControlCenter()">
+            <span id="tb-time">--:--</span>
+            <small id="tb-date">--</small>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    /* ============================================================
+       STORAGE — persistent (Claude artifact storage), with graceful
+       in-memory fallback if window.storage isn't available.
+       ============================================================ */
+    let isDark = true;
+    const memFallback = {};
+    async function dbSet(key, value) {
+      try {
+        if (window.storage) { await window.storage.set(key, JSON.stringify(value)); return; }
+      } catch (e) { /* fall through to memory */ }
+      memFallback[key] = JSON.stringify(value);
+    }
+    async function dbGet(key, fallback) {
+      try {
+        if (window.storage) {
+          const r = await window.storage.get(key);
+          return r ? JSON.parse(r.value) : fallback;
+        }
+      } catch (e) { /* not found or unavailable */ }
+      if (memFallback[key] !== undefined) return JSON.parse(memFallback[key]);
+      return fallback;
+    }
+    function loadScriptOnce(url, checkFn) {
+      return new Promise((resolve, reject) => {
+        if (checkFn && checkFn()) return resolve();
+        const s = document.createElement('script');
+        s.src = url; s.onload = () => resolve(); s.onerror = () => reject(new Error('Failed to load ' + url));
+        document.head.appendChild(s);
+      });
+    }
+
+    /* ============================================================
+       GLOBAL STATE
+       ============================================================ */
+    let user = null; // {name, pass, avatarType, avatarValue, avatarColor, accent, accent2, wallpaperId, wallpaperCustom}
+    let perfMode = false;
+    let zTop = 100;
+    const openWins = {}; // appId(or instanceId) -> win record
+
+    const AVATAR_COLORS = ['#6C5CE7', '#00B894', '#0984E3', '#E17055', '#D63031', '#00CEC9', '#FDCB6E', '#A29BFE'];
+    const ACCENTS = [
+      { name: 'Violet', accent: '#6C5CE7', accent2: '#00D4AA' },
+      { name: 'Teal', accent: '#00B894', accent2: '#6C5CE7' },
+      { name: 'Sunset', accent: '#E17055', accent2: '#FDCB6E' },
+      { name: 'Sky', accent: '#0984E3', accent2: '#00CEC9' },
+      { name: 'Rose', accent: '#E84393', accent2: '#A29BFE' },
+      { name: 'Forest', accent: '#00A86B', accent2: '#FFB454' },
+      { name: 'Blush', accent: '#FF7FA8', accent2: '#FFD3E0' },
+      { name: 'Mint', accent: '#4ED9B0', accent2: '#C8F4E4' },
+      { name: 'Lavender', accent: '#9B8CFF', accent2: '#E0D9FF' },
+      { name: 'Peach', accent: '#FF9F6B', accent2: '#FFE0C7' },
+      { name: 'Sherbet', accent: '#5EC8F2', accent2: '#D6F0FF' },
+      { name: 'Butter', accent: '#F2C94C', accent2: '#FFF3C4' },
+    ];
+    const WALLPAPERS = [
+      { id: 'nebula', css: 'radial-gradient(circle at 20% 15%, #3a2f7a 0%, transparent 45%), radial-gradient(circle at 85% 80%, #0f5c52 0%, transparent 50%), linear-gradient(160deg,#14121f 0%, #0b0d13 60%, #0a0e14 100%)' },
+      { id: 'dawn', css: 'radial-gradient(circle at 80% 10%, #5b3a29 0%, transparent 50%), linear-gradient(160deg,#1a1210 0%, #0c0a0e 70%)' },
+      { id: 'ocean', css: 'radial-gradient(circle at 15% 85%, #0b3d5c 0%, transparent 55%), linear-gradient(160deg,#0a1420 0%, #060a10 70%)' },
+      { id: 'blossom', css: 'radial-gradient(circle at 20% 20%, #7a3f5c 0%, transparent 45%), radial-gradient(circle at 85% 75%, #6a5a9f 0%, transparent 50%), linear-gradient(160deg,#241a26 0%, #14101c 70%)' },
+      { id: 'meadow', css: 'radial-gradient(circle at 25% 20%, #3f7a5c 0%, transparent 45%), radial-gradient(circle at 85% 75%, #9f9a5a 0%, transparent 50%), linear-gradient(160deg,#1a2419 0%, #10140f 70%)' },
+      { id: 'cloud', css: 'radial-gradient(circle at 20% 15%, #4a6f9f 0%, transparent 45%), radial-gradient(circle at 85% 80%, #9f7fbf 0%, transparent 50%), linear-gradient(160deg,#151a24 0%, #0c0e14 70%)' },
+      { id: 'mono', css: 'linear-gradient(160deg,#1c1c1c 0%, #0a0a0a 70%)' },
+      { id: 'custom', css: 'linear-gradient(160deg,#1c1c1c 0%, #0a0a0a 70%)' },
+    ];
+
+    /* ============================================================
+       UTIL
+       ============================================================ */
+    const $ = s => document.querySelector(s);
+    const $$ = s => Array.from(document.querySelectorAll(s));
+    function ce(tag, cls, html) { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; }
+    function uid() { return Math.random().toString(36).slice(2, 10); }
+    function pad2(n) { return n < 10 ? '0' + n : '' + n; }
+    function todayKey(d = new Date()) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+    function initials(name) { return (name || '?').trim().split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase(); }
+    function escapeHtml(s) { return (s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+    function daysInMonthOf(y, m) { return new Date(y, m + 1, 0).getDate(); }
+    function fmtTime(s) { if (!isFinite(s)) return '0:00'; const m = Math.floor(s / 60); const sec = Math.floor(s % 60); return m + ':' + pad2(sec); }
+
+    function applyTheme() {
+      if (!user) return;
+      if (!user.theme) user.theme = 'light';
+      document.body.classList.toggle('light-mode', user.theme !== 'dark');
+      document.documentElement.style.setProperty('--accent', user.accent);
+      document.documentElement.style.setProperty('--accent-2', user.accent2);
+      const rgb = hexToRgb(user.accent);
+      document.documentElement.style.setProperty('--accent-rgb', rgb.r + ',' + rgb.g + ',' + rgb.b);
+      const wp = WALLPAPERS.find(w => w.id === user.wallpaperId) || WALLPAPERS[0];
+      document.documentElement.style.setProperty('--wallpaper', wp.css);
+      if (user.wallpaperId === 'custom' && user.wallpaperCustom) {
+        document.documentElement.style.setProperty('--wallpaper-img', `url(${user.wallpaperCustom})`);
+      } else {
+        document.documentElement.style.setProperty('--wallpaper-img', 'none');
+      }
+    }
+    function hexToRgb(hex) {
+      hex = hex.replace('#', '');
+      return { r: parseInt(hex.substr(0, 2), 16), g: parseInt(hex.substr(2, 2), 16), b: parseInt(hex.substr(4, 2), 16) };
+    }
+    function rgbToHex(r, g, b) {
+      return '#' + [r, g, b].map(v => Math.max(0, Math.min(255, v)).toString(16).padStart(2, '0')).join('').toUpperCase();
+    }
+    function avatarStyle(u) {
+      if (u.avatarType === 'image') return `background-image:url(${u.avatarValue})`;
+      return `background:${u.avatarColor}`;
+    }
+    function avatarHTML(u, sizeClass = '') {
+      if (u.avatarType === 'image') return '';
+      return initials(u.name);
+    }
+
+    /* StudyOS desktop interaction: suppress the browser context menu. */
+    document.addEventListener('contextmenu', e => e.preventDefault());
+
+    /* ============================================================
+       BOOT
+       ============================================================ */
+    (async function boot() {
+      const saved = await dbGet('account', null);
+      if (saved) {
+        user = saved;
+        applyTheme();
+        $('#setup-screen').classList.add('hidden');
+        $('#lock-screen').classList.remove('hidden');
+        initLockScreen();
+      } else {
+        initSetup();
+      }
+      setInterval(updateClocks, 1000);
+      updateClocks();
+    })();
+
+    /* ============================================================
+       SETUP FLOW
+       ============================================================ */
+    let setupAvatar = { type: 'initial', value: null, color: AVATAR_COLORS[0] };
+    let setupAccentIdx = 0;
+
+    function initSetup() {
+      const picker = $('#avatar-picker');
+      picker.innerHTML = '';
+      AVATAR_COLORS.forEach((c, i) => {
+        const el = ce('div', 'avatar-opt' + (i === 0 ? ' selected' : ''));
+        el.style.background = c;
+        el.onclick = () => {
+          setupAvatar = { type: 'initial', value: null, color: c };
+          $$('.avatar-opt').forEach(o => o.classList.remove('selected'));
+          el.classList.add('selected');
+        };
+        picker.appendChild(el);
+      });
+      const uploadBtn = ce('div', 'avatar-upload', '+');
+      uploadBtn.onclick = () => $('#avatar-upload-input').click();
+      picker.appendChild(uploadBtn);
+
+      $('#avatar-upload-input').onchange = (e) => {
+        const f = e.target.files[0];
+        if (!f) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          setupAvatar = { type: 'image', value: reader.result, color: null };
+          $$('.avatar-opt').forEach(o => o.classList.remove('selected'));
+          uploadBtn.style.backgroundImage = `url(${reader.result})`;
+          uploadBtn.style.backgroundSize = 'cover';
+          uploadBtn.textContent = '';
+        };
+        reader.readAsDataURL(f);
+      };
+
+      const cp = $('#color-picker');
+      cp.innerHTML = '';
+      ACCENTS.forEach((a, i) => {
+        const el = ce('div', 'color-opt' + (i === 0 ? ' selected' : ''));
+        el.style.background = a.accent;
+        el.title = a.name;
+        el.onclick = () => { setupAccentIdx = i; $$('.color-opt').forEach(o => o.classList.remove('selected')); el.classList.add('selected'); };
+        cp.appendChild(el);
+      });
+    }
+
+    function setupNext(step) {
+      $$('.setup-step').forEach(s => s.classList.remove('active'));
+      $('#setup-step-' + step).classList.add('active');
+      $$('.setup-dot').forEach(d => d.classList.remove('active'));
+      $('#dot-' + step).classList.add('active');
+    }
+
+    async function finishSetup() {
+      const name = $('#su-name').value.trim() || 'Student';
+      const pass = $('#su-pass').value || '';
+      const accent = ACCENTS[setupAccentIdx];
+      user = {
+        name, pass,
+        avatarType: setupAvatar.type,
+        avatarValue: setupAvatar.value,
+        avatarColor: setupAvatar.color || AVATAR_COLORS[0],
+        accent: accent.accent, accent2: accent.accent2,
+        wallpaperId: 'nebula', wallpaperCustom: null, theme: 'light',
+      };
+      await dbSet('account', user);
+      applyTheme();
+      $('#setup-screen').classList.add('hidden');
+      enterDesktop();
+    }
+
+    /* ============================================================
+       LOCK SCREEN
+       ============================================================ */
+    function initLockScreen() {
+      const av = $('#lock-avatar');
+      av.style.cssText += avatarStyle(user);
+      av.textContent = avatarHTML(user);
+      $('#lock-name').textContent = user.name;
+    }
+    function tryUnlock() {
+      const val = $('#lock-pass').value;
+      if (val === user.pass || user.pass === '') {
+        $('#lock-error').textContent = '';
+        $('#lock-pass').value = '';
+        $('#lock-screen').classList.add('unlocking');
+        setTimeout(() => {
+          $('#lock-screen').classList.add('hidden');
+          $('#lock-screen').classList.remove('unlocking');
+          enterDesktop();
+        }, 400);
+      } else {
+        $('#lock-error').textContent = 'Incorrect password. Try again.';
+      }
+    }
+    function lockNow() {
+      $('#desktop').classList.add('hidden');
+      toggleStart(false); toggleControlCenter(false);
+      $('#lock-screen').classList.remove('hidden');
+      initLockScreen();
+    }
+
+    /* ============================================================
+       CLOCK
+       ============================================================ */
+    function updateClocks() {
+      const now = new Date();
+      const t = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const dOpts = { weekday: 'long', month: 'long', day: 'numeric' };
+      const dStr = now.toLocaleDateString([], dOpts);
+      if ($('#lock-clock')) $('#lock-clock').textContent = t;
+      if ($('#lock-date')) $('#lock-date').textContent = dStr;
+      if ($('#tb-time')) $('#tb-time').textContent = t;
+      if ($('#tb-date')) $('#tb-date').textContent = now.toLocaleDateString([], { month: 'short', day: 'numeric' });
+    }
+
+    /* ============================================================
+       ICON SET — cute, chunky, filled SVG icons (no emoji)
+       ============================================================ */
+    const ICON_PATHS = {
+      docs: `<path d="M6 4.5a2 2 0 0 1 2-2h5.2L18 7.3V19.5a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z" fill="#fff"/>
+         <path d="M13.2 2.5v3.3a1.5 1.5 0 0 0 1.5 1.5H18" fill="rgba(0,0,0,.14)"/>
+         <rect x="8.3" y="12" width="7.4" height="1.7" rx="0.85" fill="rgba(0,0,0,.22)"/>
+         <rect x="8.3" y="15.3" width="5" height="1.7" rx="0.85" fill="rgba(0,0,0,.22)"/>`,
+      slides: `<rect x="2.5" y="4" width="19" height="13.5" rx="3.5" fill="#fff"/>
+         <rect x="9.5" y="19.3" width="5" height="2" rx="1" fill="#fff"/>
+         <circle cx="8" cy="10" r="2.1" fill="rgba(0,0,0,.2)"/>
+         <path d="M6 15.3 10 11l3 2.7 2.6-3 3.4 4.6z" fill="rgba(0,0,0,.16)"/>`,
+      sheets: `<rect x="3" y="3" width="18" height="18" rx="5" fill="#fff"/>
+         <rect x="6.7" y="6.7" width="4.4" height="4.4" rx="1.4" fill="rgba(0,0,0,.22)"/>
+         <rect x="12.9" y="6.7" width="4.4" height="4.4" rx="1.4" fill="rgba(0,0,0,.14)"/>
+         <rect x="6.7" y="12.9" width="4.4" height="4.4" rx="1.4" fill="rgba(0,0,0,.14)"/>
+         <rect x="12.9" y="12.9" width="4.4" height="4.4" rx="1.4" fill="rgba(0,0,0,.22)"/>`,
+      music: `<circle cx="6.8" cy="18" r="3.1" fill="#fff"/>
+         <circle cx="17.3" cy="15.6" r="3.1" fill="#fff"/>
+         <path d="M9.8 18V6.6a1.3 1.3 0 0 1 1-1.27l8.2-1.7a1.3 1.3 0 0 1 1.5 1.28V15.6" stroke="#fff" stroke-width="2.3" stroke-linecap="round" fill="none"/>
+         <circle cx="20" cy="4.2" r="1.15" fill="rgba(255,255,255,.65)"/>`,
+      journal: `<path d="M12 6.8c-2.3-1.7-5.4-2.1-8.2-1a1 1 0 0 0-.6 1v12.4a1 1 0 0 0 1.35 1c2.5-.85 5.15-.45 7.15.98.18.13.44.13.6 0 2-1.43 4.65-1.83 7.15-.98a1 1 0 0 0 1.35-1V6.8a1 1 0 0 0-.6-1c-2.8-1.1-5.9-.7-8.2 1z" fill="#fff"/>
+         <path d="M12 6.8v13.4" stroke="rgba(0,0,0,.16)" stroke-width="1.5" fill="none"/>`,
+      calendar: `<rect x="3" y="5.2" width="18" height="15.8" rx="3.5" fill="#fff"/>
+         <rect x="6.3" y="2.3" width="2.6" height="4.6" rx="1.3" fill="#fff"/>
+         <rect x="15.1" y="2.3" width="2.6" height="4.6" rx="1.3" fill="#fff"/>
+         <rect x="3" y="9.5" width="18" height="2.4" fill="rgba(0,0,0,.14)"/>
+         <circle cx="12" cy="16" r="2.4" fill="rgba(0,0,0,.22)"/>`,
+      flashcards: `<rect x="3" y="6.3" width="14.5" height="10.3" rx="2.6" fill="rgba(255,255,255,.55)" transform="rotate(-6 10.25 11.45)"/>
+         <rect x="6.5" y="8" width="14.5" height="10.3" rx="2.6" fill="#fff"/>
+         <rect x="10" y="11.6" width="7.5" height="1.6" rx="0.8" fill="rgba(0,0,0,.2)"/>`,
+      sticky: `<path d="M5.5 4.5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v9.2c0 .5-.2 1-.6 1.4l-4.3 4.3a2 2 0 0 1-1.4.6H7.5a2 2 0 0 1-2-2z" fill="#fff"/>
+         <path d="M18.5 13.7h-3.3a2 2 0 0 0-2 2v3.3z" fill="rgba(0,0,0,.16)"/>
+         <rect x="8.2" y="7.2" width="6.5" height="1.6" rx="0.8" fill="rgba(0,0,0,.2)"/>`,
+      clock: `<circle cx="12" cy="12.5" r="9" fill="#fff"/>
+         <path d="M9 2.5h6" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+         <path d="M12 7.5v5.3l3.6 2.1" stroke="rgba(0,0,0,.28)" stroke-width="1.8" stroke-linecap="round" fill="none"/>`,
+      browser: `<circle cx="12" cy="12" r="9.2" fill="#fff"/>
+         <path d="M2.8 12h18.4M12 2.8c2.6 2.6 4.1 6 4.1 9.2s-1.5 6.6-4.1 9.2c-2.6-2.6-4.1-6-4.1-9.2S9.4 5.4 12 2.8z" stroke="rgba(0,0,0,.2)" stroke-width="1.5" fill="none"/>`,
+      settings: `<circle cx="12" cy="4.6" r="2.4" fill="#fff"/><circle cx="12" cy="19.4" r="2.4" fill="#fff"/>
+         <circle cx="4.6" cy="12" r="2.4" fill="#fff"/><circle cx="19.4" cy="12" r="2.4" fill="#fff"/>
+         <circle cx="7.2" cy="7.2" r="2.4" fill="#fff"/><circle cx="16.8" cy="16.8" r="2.4" fill="#fff"/>
+         <circle cx="16.8" cy="7.2" r="2.4" fill="#fff"/><circle cx="7.2" cy="16.8" r="2.4" fill="#fff"/>
+         <circle cx="12" cy="12" r="3.6" fill="rgba(0,0,0,.24)"/>`,
+    };
+    function iconSvg(id, size) {
+      size = size || 22;
+      return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="#fff" stroke="none">${ICON_PATHS[id] || ''}</svg>`;
+    }
+
+    /* ============================================================
+       APP REGISTRY
+       ============================================================ */
+    const APPS = [
+      { id: 'docs', name: 'Docs', color: '#4C6FFF', gradient: 'linear-gradient(135deg,#5B7CFA,#3550C8)', icon: 'docs', render: renderDocsApp },
+      { id: 'slides', name: 'Slides', color: '#FF8A3D', gradient: 'linear-gradient(135deg,#FFA85C,#E8611B)', icon: 'slides', render: renderSlidesApp },
+      { id: 'sheets', name: 'Sheets', color: '#28C76F', gradient: 'linear-gradient(135deg,#4FE39A,#149F52)', icon: 'sheets', render: renderSheetsApp },
+      { id: 'music', name: 'Music', color: '#E84393', gradient: 'linear-gradient(135deg,#FF6FB0,#C42B74)', icon: 'music', render: renderMusicApp },
+      { id: 'journal', name: 'Journal', color: '#9B59B6', gradient: 'linear-gradient(135deg,#B378D6,#7A3B9C)', icon: 'journal', render: renderJournalApp },
+      { id: 'calendar', name: 'Calendar', color: '#00B894', gradient: 'linear-gradient(135deg,#3DDCAE,#008F6E)', icon: 'calendar', render: renderCalendarApp },
+      { id: 'flashcards', name: 'Flashcards', color: '#F39C12', gradient: 'linear-gradient(135deg,#FFC24E,#D67F00)', icon: 'flashcards', render: renderFlashcardsApp },
+      { id: 'sticky', name: 'Quick Notes', color: '#FDCB6E', gradient: 'linear-gradient(135deg,#FFE08A,#E8A73D)', icon: 'sticky', render: renderStickyApp },
+      { id: 'clock', name: 'Clock', color: '#0984E3', gradient: 'linear-gradient(135deg,#4FB3FF,#0562AD)', icon: 'clock', render: renderClockApp },
+      { id: 'browser', name: 'Web', color: '#6C5CE7', gradient: 'linear-gradient(135deg,#8B7DFF,#4C3BC4)', icon: 'browser', render: renderBrowserApp },
+      { id: 'settings', name: 'Settings', color: '#636E72', gradient: 'linear-gradient(135deg,#8A949A,#484F53)', icon: 'settings', render: renderSettingsApp },
+    ];
+    function appById(id) { return APPS.find(a => a.id === id); }
+
+    /* ============================================================
+       ENTER DESKTOP
+       ============================================================ */
+    function enterDesktop() {
+      $('#desktop').classList.remove('hidden');
+      buildIconGrid();
+      buildStartGrid();
+      $('#start-avatar').style.cssText += avatarStyle(user);
+      $('#start-avatar').textContent = avatarHTML(user);
+      $('#start-username').textContent = user.name;
+      buildControlCenter();
+      refreshNowPill();
+      loadPerfMode();
+      document.addEventListener('focusin', trackFocusEditable);
+      document.addEventListener('mousedown', (e) => {
+        if (!e.target.closest('#start-menu') && !e.target.closest('.tb-start')) toggleStart(false);
+        if (!e.target.closest('#control-center') && !e.target.closest('#now-pill') && !e.target.closest('.tb-clock')) toggleControlCenter(false);
+      });
+    }
+
+    /* ---------- Draggable, grid-snapping desktop icons ---------- */
+    function iconCellSize() { return { cw: 96, ch: 104 }; }
+    async function buildIconGrid() {
+      const grid = $('#icons-grid');
+      grid.innerHTML = '';
+      let positions = await dbGet('icon-positions', {});
+      const { cw, ch } = iconCellSize();
+      const colsAvail = Math.max(1, Math.floor(grid.clientWidth / cw));
+      let changed = false;
+      APPS.forEach((app, i) => {
+        let pos = positions[app.id];
+        if (!pos) {
+          pos = { col: i % colsAvail, row: Math.floor(i / colsAvail) };
+          positions[app.id] = pos; changed = true;
+        }
+        const el = ce('div', 'desk-icon');
+        el.style.left = (pos.col * cw) + 'px';
+        el.style.top = (pos.row * ch) + 'px';
+        el.innerHTML = `<div class="icon-glyph" style="background:${app.gradient || app.color}">${iconSvg(app.icon, 28)}</div><div class="icon-label">${app.name}</div>`;
+        let dragging = false, moved = false, sx = 0, sy = 0, ox = 0, oy = 0;
+        el.addEventListener('mousedown', e => {
+          dragging = true; moved = false; sx = e.clientX; sy = e.clientY;
+          ox = el.offsetLeft; oy = el.offsetTop;
+          el.classList.add('dragging');
+          e.preventDefault();
+        });
+        window.addEventListener('mousemove', e => {
+          if (!dragging) return;
+          const dx = e.clientX - sx, dy = e.clientY - sy;
+          if (Math.abs(dx) > 4 || Math.abs(dy) > 4) moved = true;
+          if (moved) {
+            el.style.left = Math.max(0, ox + dx) + 'px';
+            el.style.top = Math.max(0, oy + dy) + 'px';
+          }
+        });
+        window.addEventListener('mouseup', async () => {
+          if (!dragging) return;
+          dragging = false; el.classList.remove('dragging');
+          if (moved) {
+            const col = Math.max(0, Math.round(el.offsetLeft / cw));
+            const row = Math.max(0, Math.round(el.offsetTop / ch));
+            el.style.left = (col * cw) + 'px'; el.style.top = (row * ch) + 'px';
+            const positions2 = await dbGet('icon-positions', {});
+            positions2[app.id] = { col, row };
+            await dbSet('icon-positions', positions2);
+          } else {
+            openApp(app.id);
+          }
+        });
+        grid.appendChild(el);
+      });
+      if (changed) await dbSet('icon-positions', positions);
+    }
+    function buildStartGrid() { renderStartGrid(''); }
+    function renderStartGrid(filter) {
+      const grid = $('#start-grid');
+      grid.innerHTML = '';
+      APPS.filter(a => a.name.toLowerCase().includes(filter.toLowerCase())).forEach(app => {
+        const el = ce('div', 'start-app');
+        el.innerHTML = `<div class="icon-glyph" style="background:${app.gradient || app.color}">${iconSvg(app.icon, 28)}</div><div class="start-app-label">${app.name}</div>`;
+        el.onclick = () => { openApp(app.id); toggleStart(false); };
+        grid.appendChild(el);
+      });
+    }
+    function toggleStart(force) {
+      const el = $('#start-menu');
+      const show = force !== undefined ? force : !el.classList.contains('open');
+      el.classList.toggle('open', show);
+      if (show) setTimeout(() => $('#start-search').focus(), 50);
+    }
+    function toggleControlCenter(force) {
+      const el = $('#control-center');
+      const show = force !== undefined ? force : !el.classList.contains('open');
+      el.classList.toggle('open', show);
+      if (show) buildControlCenter();
+    }
+
+    /* ============================================================
+       WINDOW MANAGER
+       ============================================================ */
+    function openApp(appId) {
+      if (openWins[appId]) { focusWin(appId); if (openWins[appId].minimized) toggleMinimize(appId); return; }
+      const app = appById(appId);
+      const win = ce('div', 'win');
+      const w = 640, h = 460;
+      const left = 80 + Object.keys(openWins).length * 26 % 300;
+      const top = 50 + Object.keys(openWins).length * 24 % 200;
+      win.style.cssText = `width:${w}px; height:${h}px; left:${left}px; top:${top}px; z-index:${++zTop};`;
+      win.innerHTML = `
+    <div class="win-titlebar" data-drag>
+      <div class="win-icon-mini" style="background:${app.gradient || app.color}">${iconSvg(app.icon, 28)}</div>
+      <div class="win-title">${app.name}</div>
+      <div class="win-btn min" title="Minimize">–</div>
+      <div class="win-btn max" title="Maximize">▢</div>
+      <div class="win-btn close" title="Close">✕</div>
+    </div>
+    <div class="win-body"></div>
+    <div class="win-resize"></div>
+  `;
+      $('#windows-layer').appendChild(win);
+      win.querySelector('.win-btn.close').onclick = () => closeWin(appId);
+      win.querySelector('.win-btn.min').onclick = () => toggleMinimize(appId);
+      win.querySelector('.win-btn.max').onclick = () => toggleMaximize(appId);
+      win.addEventListener('mousedown', () => focusWin(appId));
+      makeDraggable(win, win.querySelector('[data-drag]'));
+      makeResizable(win, win.querySelector('.win-resize'));
+
+      openWins[appId] = { el: win, minimized: false, maxed: false, prevRect: null };
+      focusWin(appId);
+      app.render(win.querySelector('.win-body'), win);
+      renderDock();
+    }
+    function closeWin(appId) {
+      const rec = openWins[appId];
+      if (!rec) return;
+      rec.el.remove();
+      delete openWins[appId];
+      renderDock();
+    }
+    function focusWin(appId) {
+      Object.entries(openWins).forEach(([id, rec]) => rec.el.classList.remove('focused'));
+      const rec = openWins[appId];
+      if (!rec) return;
+      rec.el.style.zIndex = ++zTop;
+      rec.el.classList.add('focused');
+    }
+    function toggleMinimize(appId) {
+      const rec = openWins[appId];
+      rec.minimized = !rec.minimized;
+      rec.el.style.display = rec.minimized ? 'none' : 'flex';
+      renderDock();
+    }
+    function toggleMaximize(appId) {
+      const rec = openWins[appId];
+      const win = rec.el;
+      if (!rec.maxed) {
+        rec.prevRect = { left: win.style.left, top: win.style.top, width: win.style.width, height: win.style.height };
+        win.style.left = '0'; win.style.top = '0'; win.style.width = '100vw'; win.style.height = 'calc(100vh - 82px)';
+        win.classList.add('maxed');
+        rec.maxed = true;
+      } else {
+        Object.assign(win.style, rec.prevRect);
+        win.classList.remove('maxed');
+        rec.maxed = false;
+      }
+    }
+    function renderDock() {
+      const dock = $('#tb-dock');
+      dock.innerHTML = '';
+      Object.keys(openWins).forEach(appId => {
+        const app = appById(appId);
+        const el = ce('div', 'tb-dock-item open');
+        el.style.background = app.gradient || app.color;
+        el.innerHTML = iconSvg(app.icon, 22);
+        el.title = app.name;
+        el.onclick = () => {
+          if (openWins[appId].minimized) toggleMinimize(appId);
+          focusWin(appId);
+        };
+        dock.appendChild(el);
+      });
+    }
+    function makeDraggable(win, handle) {
+      let sx, sy, ox, oy, dragging = false;
+      handle.addEventListener('mousedown', e => {
+        if (e.target.closest('.win-btn')) return;
+        dragging = true; sx = e.clientX; sy = e.clientY;
+        ox = win.offsetLeft; oy = win.offsetTop;
+        document.body.style.userSelect = 'none';
+      });
+      window.addEventListener('mousemove', e => {
+        if (!dragging) return;
+        win.style.left = Math.max(0, ox + (e.clientX - sx)) + 'px';
+        win.style.top = Math.max(0, oy + (e.clientY - sy)) + 'px';
+      });
+      window.addEventListener('mouseup', () => { dragging = false; document.body.style.userSelect = ''; });
+    }
+    function makeResizable(win, handle) {
+      let sx, sy, ow, oh, resizing = false;
+      handle.addEventListener('mousedown', e => {
+        resizing = true; sx = e.clientX; sy = e.clientY; ow = win.offsetWidth; oh = win.offsetHeight;
+        e.stopPropagation();
+      });
+      window.addEventListener('mousemove', e => {
+        if (!resizing) return;
+        win.style.width = Math.max(340, ow + (e.clientX - sx)) + 'px';
+        win.style.height = Math.max(220, oh + (e.clientY - sy)) + 'px';
+      });
+      window.addEventListener('mouseup', () => resizing = false);
+    }
+
+    /* ============================================================
+       CONTROL CENTER
+       ============================================================ */
+    function buildControlCenter() {
+      const now = new Date();
+      const y = now.getFullYear(), m = now.getMonth();
+      const first = new Date(y, m, 1);
+      const startDow = first.getDay();
+      const daysInMonth = daysInMonthOf(y, m);
+      let html = `<div class="cc-cal-head"><span>${now.toLocaleDateString([], { month: 'long', year: 'numeric' })}</span></div><div class="cc-cal-grid">`;
+      ['S', 'M', 'T', 'W', 'T', 'F', 'S'].forEach(d => html += `<div class="dow">${d}</div>`);
+      for (let i = 0; i < startDow; i++) html += `<div class="day"></div>`;
+      for (let d = 1; d <= daysInMonth; d++) {
+        html += `<div class="day${d === now.getDate() ? ' today' : ''}">${d}</div>`;
+      }
+      html += `</div>`;
+      $('#cc-cal').innerHTML = html;
+
+      $('#perf-switch').classList.toggle('on', perfMode);
+
+      dbGet('calendar-events', []).then(events => {
+        const todays = events.filter(e => e.date === todayKey());
+        const notifBox = $('#cc-notifs');
+        if (todays.length === 0) {
+          notifBox.innerHTML = `<div class="cc-empty">Nothing scheduled today. Nice.</div>`;
+        } else {
+          notifBox.innerHTML = todays.map(e => `<div class="cc-notif"><div class="t">${escapeHtml(e.title)}</div><div class="d">${e.time || 'All day'}</div></div>`).join('');
+        }
+      });
+    }
+    function setBrightness(v) {
+      const dim = (100 - v) / 100 * 0.6;
+      $('#brightness-overlay').style.opacity = dim;
+    }
+    function setVolume(v) {
+      window.__masterVolume = v / 100;
+      document.querySelectorAll('audio').forEach(a => a.volume = window.__masterVolume);
+    }
+    function togglePerf() {
+      perfMode = !perfMode;
+      document.body.classList.toggle('perf-mode', perfMode);
+      $('#perf-switch').classList.toggle('on', perfMode);
+      dbSet('perf-mode', perfMode);
+    }
+    async function loadPerfMode() {
+      perfMode = await dbGet('perf-mode', false);
+      document.body.classList.toggle('perf-mode', perfMode);
+    }
+
+    /* ---------- Dynamic pill: shows now-playing music, else today's agenda ---------- */
+    async function refreshNowPill() {
+      const pillText = $('#now-pill-text');
+      const pill = $('#now-pill');
+      if (!pillText || !pill) return;
+      const music = window.__music;
+      if (music && music.audio && !music.audio.paused && music.currentIdx > -1 && music.playlist[music.currentIdx]) {
+        pillText.textContent = music.playlist[music.currentIdx].name;
+        pill.classList.add('pulse');
+        const sub = $('#now-pill-sub'); if (sub) sub.textContent = 'Now playing';
+        updateNowPillMusicControls();
+        return;
+      }
+      pill.classList.remove('pulse');
+      const events = await dbGet('calendar-events', []);
+      const todays = events.filter(e => e.date === todayKey());
+      if (todays.length) {
+        pillText.textContent = `${todays.length} thing${todays.length > 1 ? 's' : ''} today · ${todays[0].title}`;
+        const sub = $('#now-pill-sub'); if (sub) sub.textContent = 'Today';
+      } else {
+        pillText.textContent = 'All caught up';
+        const sub = $('#now-pill-sub'); if (sub) sub.textContent = 'Nothing scheduled';
+      }
+      updateNowPillMusicControls();
+    }
+    // Back-compat name used elsewhere in the app
+    function updateNowPill() { refreshNowPill(); }
+
+    /* ============================================================
+       FULLSCREEN + TASKBAR MUSIC CONTROLS
+       ============================================================ */
+    function toggleFullscreen() {
+      if (document.fullscreenElement) {
+        document.exitFullscreen().catch(() => { });
+      } else {
+        document.documentElement.requestFullscreen().catch(() => { });
+      }
+    }
+    function syncFullscreenIcon() {
+      const b = $('#tb-fullscreen');
+      if (!b) return;
+      const on = !!document.fullscreenElement;
+      b.textContent = on ? '⛶' : '⛶';
+      b.title = on ? 'Exit fullscreen' : 'Fullscreen';
+    }
+    document.addEventListener('fullscreenchange', syncFullscreenIcon);
+
+    function togglePillPlayback() {
+      const m = ensureMusicState();
+      if (m.currentIdx === -1 && m.playlist.length) { musicPlayIndex(0); return; }
+      if (m.audio.paused) m.audio.play().catch(() => { }); else m.audio.pause();
+      updateNowPillMusicControls();
+    }
+    function updateNowPillMusicControls() {
+      const m = window.__music;
+      const btn = $('#pill-play');
+      const sub = $('#now-pill-sub');
+      if (!btn) return;
+      if (m && m.currentIdx > -1 && m.playlist[m.currentIdx]) {
+        btn.textContent = m.audio.paused ? '▶' : '⏸';
+        if (sub) sub.textContent = m.audio.paused ? 'Paused' : 'Now playing';
+      } else {
+        btn.textContent = '▶';
+        if (sub) sub.textContent = 'Nothing playing';
+      }
+    }
+
+    /* ============================================================
+       SCIENTIFIC KEYBOARD
+       ============================================================ */
+    let lastEditable = null;
+    function trackFocusEditable(e) {
+      const t = e.target;
+      if (t.tagName === 'TEXTAREA' || t.tagName === 'INPUT' || t.isContentEditable) lastEditable = t;
+    }
+    const SCI_KEYS = ['π', '√', 'x²', 'xʸ', '∑', '∫', '÷', '×', '±', '∞', 'logₓ', 'ln', 'sin', 'cos', 'tan', 'θ', 'Δ', '≈', '≠', '≤', '≥', '(', ')', '%', '!'];
+    function buildSciPanel() {
+      const panel = $('#sci-panel');
+      SCI_KEYS.forEach(k => {
+        const btn = ce('div', 'sci-key', k);
+        btn.onclick = () => insertAtCursor(k);
+        panel.appendChild(btn);
+      });
+    }
+    function insertAtCursor(str) {
+      if (!lastEditable) return;
+      if (lastEditable.tagName === 'TEXTAREA' || lastEditable.tagName === 'INPUT') {
+        const el = lastEditable;
+        const s = el.selectionStart ?? el.value.length, e = el.selectionEnd ?? el.value.length;
+        el.value = el.value.slice(0, s) + str + el.value.slice(e);
+        el.selectionStart = el.selectionEnd = s + str.length;
+        el.dispatchEvent(new Event('input'));
+        el.focus();
+      } else if (lastEditable.isContentEditable) {
+        lastEditable.focus();
+        document.execCommand('insertText', false, str);
+      }
+    }
+    function toggleSci(force) {
+      const panel = $('#sci-panel');
+      const show = force !== undefined ? force : !panel.classList.contains('show');
+      panel.classList.toggle('show', show);
+    }
+    buildSciPanel();
+
+    /* ============================================================
+       APP: DOCS (rich text — fonts, colors, highlight, import, backgrounds)
+       ============================================================ */
+    const DOC_BG_PRESETS = [
+      { name: 'White', bg: '#ffffff', color: '#111111' },
+      { name: 'Black', bg: '#0d0d0d', color: '#f0f0f0' },
+      { name: 'Paper', bg: '#f4ecd8', color: '#2b2418' },
+      { name: 'Slate', bg: '#1c1f26', color: '#e8e8ef' },
+      { name: 'Mint', bg: '#eafaf3', color: '#123' },
+      { name: 'Blush', bg: '#fff0f4', color: '#3a1522' },
+    ];
+    async function renderDocsApp(body, win) {
+      body.innerHTML = `
+    <div class="app-flex">
+      <div class="app-toolbar">
+        <button class="tbtn" data-cmd="bold" style="font-weight:800;">B</button>
+        <button class="tbtn" data-cmd="italic" style="font-style:italic;">I</button>
+        <button class="tbtn" data-cmd="underline" style="text-decoration:underline;">U</button>
+        <div class="tsep"></div>
+        <select class="plain" id="docs-font" style="height:30px; padding:0 6px;">
+          <option value="Inter">Inter</option>
+          <option value="'Space Grotesk'">Space Grotesk</option>
+          <option value="Georgia">Georgia</option>
+          <option value="'Times New Roman'">Times New Roman</option>
+          <option value="'Courier New'">Courier New</option>
+          <option value="'Comic Sans MS'">Comic Sans</option>
+        </select>
+        <select class="plain" id="docs-size" style="height:30px; padding:0 6px;">
+          <option value="2">Small</option>
+          <option value="3" selected>Normal</option>
+          <option value="5">Large</option>
+          <option value="7">Huge</option>
+        </select>
+        <input type="color" id="docs-color" title="Text color" value="#111111" style="width:28px; height:28px; border:none; background:none; padding:0;">
+        <input type="color" id="docs-hilite" title="Highlight" value="#fff176" style="width:28px; height:28px; border:none; background:none; padding:0;">
+        <div class="tsep"></div>
+        <button class="tbtn" data-cmd="formatBlock" data-val="H1">H1</button>
+        <button class="tbtn" data-cmd="formatBlock" data-val="H2">H2</button>
+        <button class="tbtn" data-cmd="formatBlock" data-val="P">¶</button>
+        <div class="tsep"></div>
+        <button class="tbtn" data-cmd="insertUnorderedList">• List</button>
+        <button class="tbtn" data-cmd="insertOrderedList">1. List</button>
+        <div class="tsep"></div>
+        <button class="tbtn" id="docs-bg-toggle">🎨 Background</button>
+        <button class="tbtn" id="docs-new">+ New</button>
+        <button class="tbtn" id="docs-import">⇪ Import</button>
+        <input type="file" id="docs-import-input" accept=".txt,.html,.htm,.docx" class="hidden">
+        <button class="tbtn" id="docs-export-pdf">Export PDF</button>
+        <button class="tbtn" id="docs-export-word">Export Word</button>
+      </div>
+      <div class="bg-bar" id="docs-bg-bar">
+        ${DOC_BG_PRESETS.map(p => `<div class="swatch" data-preset="${p.name}" style="background:${p.bg}; border:1px solid #ffffff30;" title="${p.name}"></div>`).join('')}
+        <span style="color:var(--text-dim); font-size:11.5px; margin-left:4px;">Custom:</span>
+        <input type="color" id="docs-bg-color" value="#ffffff" style="width:26px; height:26px; border:none; background:none; padding:0;">
+        <button class="tbtn" id="docs-bg-img-btn">🖼️ Paper image…</button>
+        <input type="file" id="docs-bg-img-input" accept="image/*" class="hidden">
+      </div>
+      <div style="display:flex; flex:1; overflow:hidden;">
+        <div class="docs-doclist" id="docs-list"></div>
+        <div class="docs-editor-wrap"><div id="docs-editor" contenteditable="true" spellcheck="true"></div></div>
+      </div>
+    </div>
+  `;
+      let docs = await dbGet('docs', null);
+      if (!docs || docs.length === 0) {
+        docs = [{ id: uid(), title: 'Untitled document', html: '<h1>Untitled document</h1><p>Start typing...</p>', bg: { type: 'color', value: '#1c1f26', color: '#e8e8ef' } }];
+        await dbSet('docs', docs);
+      }
+      let activeId = docs[0].id;
+      const editor = body.querySelector('#docs-editor');
+
+      function applyBg(d) {
+        if (!d.bg) { d.bg = { type: 'color', value: '#1c1f26', color: '#e8e8ef' }; }
+        if (d.bg.type === 'image') {
+          editor.style.background = `url(${d.bg.value}) center/cover no-repeat`;
+          editor.style.color = d.bg.color || '#111';
+        } else {
+          editor.style.background = d.bg.value;
+          editor.style.color = d.bg.color || '#111';
+        }
+      }
+      function renderList() {
+        const list = body.querySelector('#docs-list');
+        list.innerHTML = '';
+        docs.forEach(d => {
+          const it = ce('div', 'doc-item' + (d.id === activeId ? ' active' : ''), escapeHtml(d.title));
+          it.onclick = () => { saveActive(); activeId = d.id; loadActive(); renderList(); };
+          list.appendChild(it);
+        });
+      }
+      function loadActive() {
+        const d = docs.find(x => x.id === activeId);
+        editor.innerHTML = d.html;
+        applyBg(d);
+      }
+      function saveActive() {
+        const d = docs.find(x => x.id === activeId);
+        if (!d) return;
+        d.html = editor.innerHTML;
+        d.title = (editor.innerText.trim().split('\n')[0] || 'Untitled document').slice(0, 40);
+        dbSet('docs', docs);
+      }
+      editor.addEventListener('input', () => { saveActive(); renderList(); });
+      renderList(); loadActive();
+
+      body.querySelectorAll('[data-cmd]').forEach(btn => {
+        btn.onclick = () => {
+          const cmd = btn.dataset.cmd, val = btn.dataset.val;
+          editor.focus();
+          document.execCommand(cmd, false, val || null);
+          saveActive();
+        };
+      });
+      body.querySelector('#docs-font').onchange = (e) => { editor.focus(); document.execCommand('fontName', false, e.target.value); saveActive(); };
+      body.querySelector('#docs-size').onchange = (e) => { editor.focus(); document.execCommand('fontSize', false, e.target.value); saveActive(); };
+      body.querySelector('#docs-color').oninput = (e) => { editor.focus(); document.execCommand('foreColor', false, e.target.value); saveActive(); };
+      body.querySelector('#docs-hilite').oninput = (e) => {
+        editor.focus();
+        if (!document.execCommand('hiliteColor', false, e.target.value)) {
+          document.execCommand('backColor', false, e.target.value);
+        }
+        saveActive();
+      };
+      body.querySelector('#docs-new').onclick = () => {
+        saveActive();
+        const nd = { id: uid(), title: 'Untitled document', html: '<h1>Untitled document</h1><p></p>', bg: { type: 'color', value: '#1c1f26', color: '#e8e8ef' } };
+        docs.unshift(nd); activeId = nd.id;
+        dbSet('docs', docs); renderList(); loadActive();
+      };
+
+      // ---- background picker ----
+      const bgBar = body.querySelector('#docs-bg-bar');
+      body.querySelector('#docs-bg-toggle').onclick = () => bgBar.classList.toggle('show');
+      bgBar.querySelectorAll('[data-preset]').forEach(sw => {
+        sw.onclick = () => {
+          const preset = DOC_BG_PRESETS.find(p => p.name === sw.dataset.preset);
+          const d = docs.find(x => x.id === activeId);
+          d.bg = { type: 'color', value: preset.bg, color: preset.color };
+          applyBg(d); dbSet('docs', docs);
+        };
+      });
+      bgBar.querySelector('#docs-bg-color').oninput = (e) => {
+        const d = docs.find(x => x.id === activeId);
+        const rgb = hexToRgb(e.target.value);
+        const lum = (0.299 * rgb.r + 0.587 * rgb.g + 0.114 * rgb.b);
+        d.bg = { type: 'color', value: e.target.value, color: lum > 140 ? '#111111' : '#f0f0f0' };
+        applyBg(d); dbSet('docs', docs);
+      };
+      bgBar.querySelector('#docs-bg-img-btn').onclick = () => bgBar.querySelector('#docs-bg-img-input').click();
+      bgBar.querySelector('#docs-bg-img-input').onchange = (e) => {
+        const f = e.target.files[0]; if (!f) return;
+        const r = new FileReader();
+        r.onload = () => {
+          const d = docs.find(x => x.id === activeId);
+          d.bg = { type: 'image', value: r.result, color: '#111111' };
+          applyBg(d); dbSet('docs', docs);
+        };
+        r.readAsDataURL(f);
+      };
+
+      // ---- import ----
+      body.querySelector('#docs-import').onclick = () => body.querySelector('#docs-import-input').click();
+      body.querySelector('#docs-import-input').onchange = async (e) => {
+        const f = e.target.files[0]; if (!f) return;
+        const lower = f.name.toLowerCase();
+        let html = '';
+        if (lower.endsWith('.docx')) {
+          try {
+            await loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js', () => window.mammoth);
+            const buf = await f.arrayBuffer();
+            const result = await window.mammoth.convertToHtml({ arrayBuffer: buf });
+            html = result.value;
+          } catch (err) {
+            alert('Could not import this Word file: ' + err.message);
+            return;
+          }
+        } else if (lower.endsWith('.html') || lower.endsWith('.htm')) {
+          html = await f.text();
+        } else {
+          const text = await f.text();
+          html = text.split(/\r?\n/).map(l => `<p>${escapeHtml(l)}</p>`).join('');
+        }
+        saveActive();
+        const nd = { id: uid(), title: f.name.replace(/\.[^.]+$/, ''), html, bg: { type: 'color', value: '#1c1f26', color: '#e8e8ef' } };
+        docs.unshift(nd); activeId = nd.id;
+        await dbSet('docs', docs); renderList(); loadActive();
+      };
+
+      body.querySelector('#docs-export-pdf').onclick = () => {
+        const d = docs.find(x => x.id === activeId);
+        const w = window.open('', '_blank');
+        w.document.write(`<html><head><title>${d.title}</title></head><body style="background:${d.bg ? d.bg.value : '#fff'}; color:${d.bg ? d.bg.color : '#111'};">${editor.innerHTML}</body></html>`);
+        w.document.close(); w.focus(); w.print();
+      };
+      body.querySelector('#docs-export-word').onclick = () => {
+        const d = docs.find(x => x.id === activeId);
+        const blob = new Blob(['<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"></head><body>' + editor.innerHTML + '</body></html>'], { type: 'application/msword' });
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = (d.title || 'document') + '.doc'; a.click();
+      };
+    }
+
+    /* ============================================================
+       APP: SLIDES (shapes, movable/resizable images, PDF/PPTX import)
+       ============================================================ */
+    function migrateSlide(s) {
+      if (!s.elements) {
+        s.elements = [];
+        if (s.img) { s.elements.push({ id: uid(), type: 'image', x: 20, y: 20, w: 300, h: 180, src: s.img }); delete s.img; }
+      }
+      return s;
+    }
+    async function renderSlidesApp(body, win) {
+      body.innerHTML = `
+    <div class="app-flex">
+      <div class="app-toolbar">
+        <button class="tbtn" id="sl-add">+ Slide</button>
+        <button class="tbtn" id="sl-del">Delete</button>
+        <div class="tsep"></div>
+        <button class="tbtn" id="sl-img">+ Image</button>
+        <input type="file" id="sl-img-input" accept="image/*" class="hidden">
+        <button class="tbtn" id="sl-rect">▭ Rect</button>
+        <button class="tbtn" id="sl-circle">⬤ Circle</button>
+        <button class="tbtn" id="sl-triangle">▲ Triangle</button>
+        <button class="tbtn" id="sl-line">— Line</button>
+        <input type="color" id="sl-shape-color" value="#6C5CE7" title="Shape color" style="width:26px; height:26px; border:none; background:none; padding:0;">
+        <div class="tsep"></div>
+        <button class="tbtn" id="sl-import">⇪ Import PDF/PPTX</button>
+        <input type="file" id="sl-import-input" accept=".pdf,.pptx" class="hidden">
+        <button class="tbtn" id="sl-export">Export PDF</button>
+        <button class="tbtn" id="sl-export-pptx">Export PowerPoint</button>
+      </div>
+      <div class="slides-wrap">
+        <div class="slide-list" id="sl-list"></div>
+        <div class="slide-canvas-wrap"><div class="slide-canvas" id="sl-canvas"></div></div>
+      </div>
+    </div>
+  `;
+      let slides = await dbGet('slides', null);
+      if (!slides || slides.length === 0) {
+        slides = [{ id: uid(), title: 'Title Slide', content: 'Click to edit', elements: [] }];
+        await dbSet('slides', slides);
+      }
+      slides = slides.map(migrateSlide);
+      let activeIdx = 0;
+
+      function save() { dbSet('slides', slides); }
+      function renderList() {
+        const list = body.querySelector('#sl-list');
+        list.innerHTML = '';
+        slides.forEach((s, i) => {
+          const t = ce('div', 'slide-thumb' + (i === activeIdx ? ' active' : ''), `<div>${escapeHtml(s.title.slice(0, 26))}</div>`);
+          t.onclick = () => { syncCanvas(); activeIdx = i; renderList(); renderCanvas(); };
+          list.appendChild(t);
+        });
+      }
+      function makeElementInteractive(elWrap, elData, slide) {
+        let dragging = false, sx = 0, sy = 0, ox = 0, oy = 0;
+        elWrap.addEventListener('mousedown', e => {
+          if (e.target.dataset.handle) return;
+          dragging = true; sx = e.clientX; sy = e.clientY; ox = elData.x; oy = elData.y;
+          e.stopPropagation();
+        });
+        window.addEventListener('mousemove', e => {
+          if (!dragging) return;
+          elData.x = ox + (e.clientX - sx); elData.y = oy + (e.clientY - sy);
+          elWrap.style.left = elData.x + 'px'; elWrap.style.top = elData.y + 'px';
+        });
+        window.addEventListener('mouseup', () => { if (dragging) { dragging = false; save(); } });
+
+        const rh = elWrap.querySelector('[data-handle="resize"]');
+        let resizing = false, rsx = 0, rsy = 0, ow = 0, oh = 0;
+        rh.addEventListener('mousedown', e => {
+          resizing = true; rsx = e.clientX; rsy = e.clientY; ow = elData.w; oh = elData.h;
+          e.stopPropagation();
+        });
+        window.addEventListener('mousemove', e => {
+          if (!resizing) return;
+          elData.w = Math.max(20, ow + (e.clientX - rsx));
+          elData.h = Math.max(12, oh + (e.clientY - rsy));
+          elWrap.style.width = elData.w + 'px'; elWrap.style.height = elData.h + 'px';
+        });
+        window.addEventListener('mouseup', () => { if (resizing) { resizing = false; save(); } });
+
+        const dh = elWrap.querySelector('[data-handle="delete"]');
+        dh.onclick = (e) => {
+          e.stopPropagation();
+          slide.elements = slide.elements.filter(x => x.id !== elData.id);
+          save(); renderCanvas();
+        };
+      }
+      function buildElementDom(elData) {
+        const wrap = ce('div', 'slide-el');
+        wrap.style.left = elData.x + 'px'; wrap.style.top = elData.y + 'px';
+        wrap.style.width = elData.w + 'px'; wrap.style.height = elData.h + 'px';
+        wrap.style.cursor = 'move';
+        let inner = '';
+        if (elData.type === 'image') {
+          inner = `<img src="${elData.src}"alt="Slide image"  style="width:100%;height:100%;object-fit:contain; pointer-events:none;">`;
+        } else if (elData.type === 'rect') {
+          inner = `<div style="width:100%;height:100%;background:${elData.color};border-radius:6px;"></div>`;
+        } else if (elData.type === 'circle') {
+          inner = `<div style="width:100%;height:100%;background:${elData.color};border-radius:50%;"></div>`;
+        } else if (elData.type === 'triangle') {
+          inner = `<svg viewBox="0 0 100 100" style="width:100%;height:100%; pointer-events:none;"><polygon points="50,3 97,97 3,97" fill="${elData.color}"/></svg>`;
+        } else if (elData.type === 'line') {
+          inner = `<div style="width:100%;height:100%;background:${elData.color};border-radius:3px;"></div>`;
+        }
+        wrap.innerHTML = inner + `
+      <div data-handle="delete" style="position:absolute; top:-9px; right:-9px; width:18px; height:18px; border-radius:50%; background:var(--danger); color:#fff; font-size:10px; display:flex; align-items:center; justify-content:center; cursor:pointer;">✕</div>
+      <div data-handle="resize" style="position:absolute; right:-6px; bottom:-6px; width:14px; height:14px; border-radius:50%; background:#fff; border:2px solid var(--accent); cursor:nwse-resize;"></div>
+    `;
+        return wrap;
+      }
+      function renderCanvas() {
+        const s = slides[activeIdx];
+        const canvas = body.querySelector('#sl-canvas');
+        canvas.innerHTML = `
+      <h2 contenteditable="true" id="sl-title">${escapeHtml(s.title)}</h2>
+      <div contenteditable="true" id="sl-content">${escapeHtml(s.content)}</div>
+    `;
+        s.elements.forEach(elData => {
+          const dom = buildElementDom(elData);
+          canvas.appendChild(dom);
+          makeElementInteractive(dom, elData, s);
+        });
+      }
+      function syncCanvas() {
+        const s = slides[activeIdx];
+        const t = body.querySelector('#sl-title'), c = body.querySelector('#sl-content');
+        if (t) s.title = t.innerText;
+        if (c) s.content = c.innerText;
+        save();
+      }
+      renderList(); renderCanvas();
+      body.querySelector('#sl-canvas').addEventListener('input', (e) => {
+        if (e.target.id === 'sl-title' || e.target.id === 'sl-content') syncCanvas();
+      });
+
+      body.querySelector('#sl-add').onclick = () => {
+        syncCanvas();
+        slides.push({ id: uid(), title: 'New Slide', content: '', elements: [] });
+        activeIdx = slides.length - 1; save(); renderList(); renderCanvas();
+      };
+      body.querySelector('#sl-del').onclick = () => {
+        if (slides.length <= 1) return;
+        slides.splice(activeIdx, 1); activeIdx = Math.max(0, activeIdx - 1); save(); renderList(); renderCanvas();
+      };
+      body.querySelector('#sl-img').onclick = () => body.querySelector('#sl-img-input').click();
+      body.querySelector('#sl-img-input').onchange = (e) => {
+        const f = e.target.files[0]; if (!f) return;
+        const r = new FileReader();
+        r.onload = () => {
+          slides[activeIdx].elements.push({ id: uid(), type: 'image', x: 40, y: 40, w: 280, h: 180, src: r.result });
+          save(); renderCanvas();
+        };
+        r.readAsDataURL(f);
+      };
+      function addShape(type) {
+        const color = body.querySelector('#sl-shape-color').value;
+        const size = type === 'line' ? { w: 160, h: 6 } : { w: 120, h: 120 };
+        slides[activeIdx].elements.push({ id: uid(), type, x: 60, y: 60, w: size.w, h: size.h, color });
+        save(); renderCanvas();
+      }
+      body.querySelector('#sl-rect').onclick = () => addShape('rect');
+      body.querySelector('#sl-circle').onclick = () => addShape('circle');
+      body.querySelector('#sl-triangle').onclick = () => addShape('triangle');
+      body.querySelector('#sl-line').onclick = () => addShape('line');
+
+      body.querySelector('#sl-import').onclick = () => body.querySelector('#sl-import-input').click();
+      body.querySelector('#sl-import-input').onchange = async (e) => {
+        const f = e.target.files[0]; if (!f) return;
+        const lower = f.name.toLowerCase();
+        try {
+          if (lower.endsWith('.pdf')) {
+            await loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js', () => window.pdfjsLib);
+            window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+            const buf = await f.arrayBuffer();
+            const pdf = await window.pdfjsLib.getDocument({ data: buf }).promise;
+            for (let p = 1; p <= pdf.numPages; p++) {
+              const page = await pdf.getPage(p);
+              const viewport = page.getViewport({ scale: 1.5 });
+              const c = document.createElement('canvas');
+              c.width = viewport.width; c.height = viewport.height;
+              await page.render({ canvasContext: c.getContext('2d'), viewport }).promise;
+              slides.push({ id: uid(), title: 'Slide ' + p, content: '', elements: [{ id: uid(), type: 'image', x: 0, y: 0, w: 688, h: 387, src: c.toDataURL('image/jpeg', 0.85) }] });
+            }
+            activeIdx = slides.length - 1; save(); renderList(); renderCanvas();
+          } else if (lower.endsWith('.pptx')) {
+            await loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js', () => window.JSZip);
+            const buf = await f.arrayBuffer();
+            const zip = await window.JSZip.loadAsync(buf);
+            const slideFiles = Object.keys(zip.files)
+              .filter(n => /^ppt\/slides\/slide\d+\.xml$/.test(n))
+              .sort((a, b) => parseInt(a.match(/\d+/)[0]) - parseInt(b.match(/\d+/)[0]));
+            for (const name of slideFiles) {
+              const xml = await zip.files[name].async('text');
+              const texts = Array.from(xml.matchAll(/<a:t>([^<]*)<\/a:t>/g)).map(m => m[1]);
+              slides.push({ id: uid(), title: texts[0] || 'Imported Slide', content: texts.slice(1).join('\n'), elements: [] });
+            }
+            activeIdx = slides.length - 1; save(); renderList(); renderCanvas();
+            alert('Imported the text from your PowerPoint. Images and exact shape layouts from .pptx files are not carried over yet - you can add those back with the image and shape tools.');
+          }
+        } catch (err) {
+          alert('Import failed: ' + err.message);
+        }
+      };
+
+      body.querySelector('#sl-export').onclick = () => {
+        syncCanvas();
+        const w = window.open('', '_blank');
+        let html = slides.map(s => {
+          const imgs = s.elements.filter(el => el.type === 'image').map(el => `<img src="${el.src}" style="max-width:100%; display:block; margin-bottom:10px;">`).join('');
+          return `<div style="page-break-after:always; padding:60px; font-family:sans-serif;"><h1>${escapeHtml(s.title)}</h1>${imgs}<p>${escapeHtml(s.content)}</p></div>`;
+        }).join('');
+        w.document.write(`<html><body>${html}</body></html>`); w.document.close(); w.focus(); w.print();
+      };
+    }
+
+    /* ---------- Real PowerPoint (.pptx) export ---------- */
+    body.querySelector('#sl-export-pptx').onclick = async () => {
+      syncCanvas();
+      try {
+        await loadScriptOnce('https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js', () => window.PptxGenJS);
+        if (!window.PptxGenJS) throw new Error('PowerPoint exporter could not be loaded.');
+        const pptx = new window.PptxGenJS();
+        pptx.layout = 'LAYOUT_WIDE';
+        pptx.author = user?.name || 'StudyOS';
+        pptx.subject = 'Presentation created in StudyOS';
+        pptx.title = 'StudyOS Presentation';
+        pptx.company = 'StudyOS';
+        pptx.lang = 'en-US';
+        const SW = 13.333333, SH = 7.5, CW = 688, CH = 387;
+        const x = v => Math.max(0, Number(v) || 0) / CW * SW;
+        const y = v => Math.max(0, Number(v) || 0) / CH * SH;
+        const w = v => Math.max(0, Number(v) || 0) / CW * SW;
+        const h = v => Math.max(0, Number(v) || 0) / CH * SH;
+        const safeHex = c => {
+          c = String(c || 'FFFFFF').replace('#', '').trim();
+          return /^[0-9a-fA-F]{6}$/.test(c) ? c : 'FFFFFF';
+        };
+        const dataToImage = src => src && src.startsWith('data:') ? src : null;
+        slides.forEach(s => {
+          const slide = pptx.addSlide();
+          slide.background = { color: s.bg?.value?.startsWith('#') ? safeHex(s.bg.value) : 'FFFFFF' };
+          slide.addText(s.title || '', { x: 0.7, y: 0.45, w: 11.9, h: 0.65, fontFace: 'Aptos Display', fontSize: 24, bold: true, color: s.bg?.color?.startsWith('#') ? safeHex(s.bg.color) : '222222', margin: 0, breakLine: false });
+          if (s.content) {
+            slide.addText(s.content, { x: 0.7, y: 1.25, w: 11.9, h: 1.1, fontFace: 'Aptos', fontSize: 15, color: '333333', margin: 0.03, breakLine: false, fit: 'shrink' });
+          }
+          (s.elements || []).forEach(el => {
+            const ex = x(el.x), ey = y(el.y), ew = w(el.w), eh = h(el.h);
+            if (el.type === 'image' && dataToImage(el.src)) {
+              slide.addImage({ data: el.src, x: ex, y: ey, w: ew, h: eh });
+            } else if (el.type === 'rect') {
+              slide.addShape(pptx.ShapeType.rect, { x: ex, y: ey, w: ew, h: eh, fill: { color: safeHex(el.color) }, line: { color: safeHex(el.color), transparency: 100 } });
+            } else if (el.type === 'circle') {
+              slide.addShape(pptx.ShapeType.ellipse, { x: ex, y: ey, w: ew, h: eh, fill: { color: safeHex(el.color) }, line: { color: safeHex(el.color), transparency: 100 } });
+            } else if (el.type === 'triangle') {
+              slide.addShape(pptx.ShapeType.triangle, { x: ex, y: ey, w: ew, h: eh, fill: { color: safeHex(el.color) }, line: { color: safeHex(el.color), transparency: 100 } });
+            } else if (el.type === 'line') {
+              slide.addShape(pptx.ShapeType.line, { x: ex, y: ey, w: ew, h: eh, line: { color: safeHex(el.color), width: 2 } });
+            }
+          });
+        });
+        const base = (slides[0]?.title || 'StudyOS Presentation').replace(/[^a-z0-9 _-]/gi, '').trim() || 'StudyOS Presentation';
+        await pptx.writeFile({ fileName: base + '.pptx' });
+      } catch (err) {
+        console.error(err);
+        alert('Could not export PowerPoint: ' + err.message);
+      }
+    };
+
+    /* ============================================================
+       APP: SHEETS
+       ============================================================ */
+    async function renderSheetsApp(body, win) {
+      body.innerHTML = `
+    <div class="app-flex">
+      <div class="app-toolbar">
+        <button class="tbtn" id="sh-addrow">+ Row</button>
+        <button class="tbtn" id="sh-addcol">+ Column</button>
+        <div class="tsep"></div>
+        <button class="tbtn" id="sh-export">Export CSV</button>
+      </div>
+      <div class="sheet-wrap"><table class="sheet" id="sheet-table"></table></div>
+    </div>
+  `;
+      let data = await dbGet('sheet-data', null);
+      if (!data) { data = { rows: 12, cols: 8, cells: {} }; await dbSet('sheet-data', data); }
+
+      function colLetter(i) { let s = ''; i++; while (i > 0) { let m = (i - 1) % 26; s = String.fromCharCode(65 + m) + s; i = Math.floor((i - 1) / 26); } return s; }
+      function render() {
+        const table = body.querySelector('#sheet-table');
+        let html = '<tr><th class="rownum"></th>';
+        for (let c = 0; c < data.cols; c++) html += `<th>${colLetter(c)}</th>`;
+        html += '</tr>';
+        for (let r = 0; r < data.rows; r++) {
+          html += `<tr><th class="rownum">${r + 1}</th>`;
+          for (let c = 0; c < data.cols; c++) {
+            const key = r + '_' + c;
+            const val = data.cells[key] || '';
+            html += `<td><input data-key="${key}" value="${escapeHtml(val)}"></td>`;
+          }
+          html += '</tr>';
+        }
+        table.innerHTML = html;
+        table.querySelectorAll('input').forEach(inp => {
+          inp.addEventListener('input', () => { data.cells[inp.dataset.key] = inp.value; dbSet('sheet-data', data); });
+        });
+      }
+      render();
+      body.querySelector('#sh-addrow').onclick = () => { data.rows++; dbSet('sheet-data', data); render(); };
+      body.querySelector('#sh-addcol').onclick = () => { data.cols++; dbSet('sheet-data', data); render(); };
+      body.querySelector('#sh-export').onclick = () => {
+        let csv = '';
+        for (let r = 0; r < data.rows; r++) {
+          let row = [];
+          for (let c = 0; c < data.cols; c++) row.push('"' + (data.cells[r + '_' + c] || '').replace(/"/g, '""') + '"');
+          csv += row.join(',') + '\n';
+        }
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'sheet.csv'; a.click();
+      };
+    }
+
+    /* ============================================================
+       APP: MUSIC — real playback, playlists, favorites, seek, skip,
+       and it drives the taskbar "dynamic island" pill.
+       ============================================================ */
+    function ensureMusicState() {
+      if (window.__music) return window.__music;
+      const audio = new Audio();
+      audio.volume = window.__masterVolume ?? 0.7;
+      window.__music = {
+        audio,
+        playlists: { 'My Music': [] },
+        activePlaylist: 'My Music',
+        currentIdx: -1,
+        playlist: [], // alias to active playlist's tracks, kept in sync
+      };
+      audio.addEventListener('play', refreshNowPill);
+      audio.addEventListener('pause', refreshNowPill);
+      audio.addEventListener('ended', () => {
+        musicNext();
+      });
+      audio.addEventListener('timeupdate', () => {
+        if (window.__musicTimeCb) window.__musicTimeCb();
+      });
+      return window.__music;
+    }
+    function musicNext() {
+      const m = ensureMusicState();
+      if (m.playlist.length === 0) return;
+      const next = (m.currentIdx + 1) % m.playlist.length;
+      musicPlayIndex(next);
+    }
+    function musicPrev() {
+      const m = ensureMusicState();
+      if (m.playlist.length === 0) return;
+      const prev = (m.currentIdx - 1 + m.playlist.length) % m.playlist.length;
+      musicPlayIndex(prev);
+    }
+    function musicPlayIndex(i) {
+      const m = ensureMusicState();
+      if (!m.playlist[i]) return;
+      m.currentIdx = i;
+      m.audio.src = m.playlist[i].url;
+      m.audio.volume = window.__masterVolume ?? 0.7;
+      m.audio.play().catch(err => { console.warn('Playback error', err); });
+      if (window.__musicUiRefresh) window.__musicUiRefresh();
+      refreshNowPill();
+    }
+    async function renderMusicApp(body, win) {
+      const m = ensureMusicState();
+      body.innerHTML = `
+    <div class="music-wrap">
+      <div class="music-playlists">
+        <select class="plain" id="music-pl-select" style="flex:1;"></select>
+        <button class="small-btn ghost" id="music-pl-new">+ Playlist</button>
+      </div>
+      <div class="music-drop" id="music-drop">Drag & drop audio files here, or <label style="color:var(--accent-2); cursor:pointer;">browse<input type="file" id="music-input" accept="audio/*" multiple class="hidden"></label></div>
+      <div class="app-body-scroll" id="music-list"></div>
+      <div class="music-player-bar">
+        <div class="seek-row">
+          <span id="music-cur">0:00</span>
+          <input type="range" id="music-seek" min="0" max="100" value="0">
+          <span id="music-dur">0:00</span>
+        </div>
+        <div class="music-controls-row">
+          <div class="skip-btn" id="music-prev">⏮</div>
+          <div class="play-btn" id="music-play">▶</div>
+          <div class="skip-btn" id="music-next">⏭</div>
+          <div style="flex:1; font-size:12.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" id="music-nowplaying">Nothing playing</div>
+        </div>
+      </div>
+    </div>
+  `;
+      function syncActivePlaylist() { m.playlist = m.playlists[m.activePlaylist]; }
+      syncActivePlaylist();
+
+      function renderPlSelect() {
+        const sel = body.querySelector('#music-pl-select');
+        sel.innerHTML = Object.keys(m.playlists).map(name => `<option value="${escapeHtml(name)}" ${name === m.activePlaylist ? 'selected' : ''}>${escapeHtml(name)} (${m.playlists[name].length})</option>`).join('');
+      }
+      function renderList() {
+        const list = body.querySelector('#music-list');
+        syncActivePlaylist();
+        if (m.playlist.length === 0) { list.innerHTML = `<div class="empty-hint">No tracks in this playlist yet. Drop some audio files above.</div>`; return; }
+        list.innerHTML = '';
+        m.playlist.forEach((t, i) => {
+          const el = ce('div', 'track' + (i === m.currentIdx ? ' playing' : ''));
+          el.innerHTML = `<span>${i === m.currentIdx ? '♪ ' : ''}${escapeHtml(t.name)}</span><span class="fav${t.favorite ? ' on' : ''}">★</span>`;
+          el.querySelector('span').onclick = () => musicPlayIndex(i);
+          el.querySelector('.fav').onclick = (e) => { e.stopPropagation(); t.favorite = !t.favorite; renderList(); };
+          list.appendChild(el);
+        });
+      }
+      function updatePlayUi() {
+        body.querySelector('#music-play').textContent = (m.audio.paused ? '▶' : '⏸');
+        body.querySelector('#music-nowplaying').textContent = m.playlist[m.currentIdx] ? m.playlist[m.currentIdx].name : 'Nothing playing';
+        renderList();
+      }
+      window.__musicUiRefresh = updatePlayUi;
+
+      window.__musicTimeCb = () => {
+        const seek = body.querySelector('#music-seek');
+        if (!seek) return;
+        const dur = m.audio.duration || 0;
+        seek.max = Math.floor(dur) || 100;
+        seek.value = Math.floor(m.audio.currentTime) || 0;
+        body.querySelector('#music-cur').textContent = fmtTime(m.audio.currentTime);
+        body.querySelector('#music-dur').textContent = fmtTime(dur);
+      };
+
+      renderPlSelect(); renderList(); updatePlayUi();
+
+      body.querySelector('#music-pl-select').onchange = (e) => { m.activePlaylist = e.target.value; syncActivePlaylist(); renderList(); updatePlayUi(); };
+      body.querySelector('#music-pl-new').onclick = () => {
+        const name = prompt('Playlist name?');
+        if (!name || m.playlists[name]) return;
+        m.playlists[name] = [];
+        m.activePlaylist = name;
+        renderPlSelect(); syncActivePlaylist(); renderList();
+      };
+      body.querySelector('#music-play').onclick = () => {
+        if (m.currentIdx === -1 && m.playlist.length) { musicPlayIndex(0); return; }
+        if (m.audio.paused) { m.audio.play().catch(() => { }); } else { m.audio.pause(); }
+        updatePlayUi();
+      };
+      body.querySelector('#music-prev').onclick = musicPrev;
+      body.querySelector('#music-next').onclick = musicNext;
+      body.querySelector('#music-seek').oninput = (e) => { m.audio.currentTime = Number(e.target.value); };
+      m.audio.addEventListener('play', updatePlayUi);
+      m.audio.addEventListener('pause', updatePlayUi);
+
+      function addFiles(files) {
+        Array.from(files).forEach(f => {
+          if (!f.type.startsWith('audio')) return;
+          m.playlist.push({ name: f.name.replace(/\.[^.]+$/, ''), url: URL.createObjectURL(f), favorite: false });
+        });
+        renderPlSelect(); renderList();
+      }
+      const drop = body.querySelector('#music-drop');
+      drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('drag'); });
+      drop.addEventListener('dragleave', () => drop.classList.remove('drag'));
+      drop.addEventListener('drop', e => { e.preventDefault(); drop.classList.remove('drag'); addFiles(e.dataTransfer.files); });
+      body.querySelector('#music-input').onchange = e => addFiles(e.target.files);
+    }
+
+    /* ============================================================
+       APP: JOURNAL + HABITS + DASHBOARD
+       ============================================================ */
+    async function renderJournalApp(body, win) {
+      body.innerHTML = `
+    <div class="app-flex">
+      <div class="app-toolbar">
+        <button class="tbtn active" data-tab="journal">Journal</button>
+        <button class="tbtn" data-tab="habits">Habits</button>
+        <button class="tbtn" data-tab="dashboard">Dashboard</button>
+      </div>
+      <div class="app-body-scroll app-pad" id="journal-body"></div>
+    </div>
+  `;
+      let tab = 'journal';
+      let journalDate = todayKey();
+
+      async function renderTab() {
+        body.querySelectorAll('[data-tab]').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+        const area = body.querySelector('#journal-body');
+
+        if (tab === 'journal') {
+          const key = 'journal-' + journalDate;
+          const text = await dbGet(key, '');
+          const dObj = new Date(journalDate + 'T00:00:00');
+          const isToday = journalDate === todayKey();
+          area.innerHTML = `
+        <div style="display:flex; gap:16px;">
+          <div style="flex:1; min-width:0;">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+              <button class="small-btn ghost" id="j-prev">← Prev</button>
+              <div style="font-weight:700; font-size:15px; flex:1;">${dObj.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</div>
+              <button class="small-btn ghost" id="j-next" ${isToday ? 'disabled style="opacity:.4;"' : ''}>Next →</button>
+              ${isToday ? '' : '<button class="small-btn ghost" id="j-today">Today</button>'}
+            </div>
+            <textarea class="plain" style="width:100%; min-height:280px; resize:vertical;" placeholder="What's on your mind today?" id="journal-text">${escapeHtml(text)}</textarea>
+          </div>
+          <div style="width:190px; flex-shrink:0;">
+            <div style="font-size:11px; font-weight:700; color:var(--text-dim); text-transform:uppercase; letter-spacing:.04em; margin-bottom:8px;">Recent entries</div>
+            <div id="j-history"></div>
+          </div>
+        </div>
+      `;
+          area.querySelector('#journal-text').addEventListener('input', e => dbSet(key, e.target.value));
+          area.querySelector('#j-prev').onclick = () => { const d = new Date(journalDate + 'T00:00:00'); d.setDate(d.getDate() - 1); journalDate = todayKey(d); renderTab(); };
+          const nextBtn = area.querySelector('#j-next');
+          if (nextBtn) nextBtn.onclick = () => { if (isToday) return; const d = new Date(journalDate + 'T00:00:00'); d.setDate(d.getDate() + 1); journalDate = todayKey(d); renderTab(); };
+          const todayBtn = area.querySelector('#j-today');
+          if (todayBtn) todayBtn.onclick = () => { journalDate = todayKey(); renderTab(); };
+
+          const histBox = area.querySelector('#j-history');
+          const dates = [...Array(14)].map((_, i) => { const d = new Date(); d.setDate(d.getDate() - i); return todayKey(d); });
+          for (const dk of dates) {
+            const t = await dbGet('journal-' + dk, '');
+            const item = ce('div', 'journal-history-item' + (dk === journalDate ? ' active' : ''));
+            const label = dk === todayKey() ? 'Today' : new Date(dk + 'T00:00:00').toLocaleDateString([], { month: 'short', day: 'numeric' });
+            item.innerHTML = `<div class="jhd">${label}</div><div class="jhp">${escapeHtml(t) || '<span style="opacity:.5">empty</span>'}</div>`;
+            item.onclick = () => { journalDate = dk; renderTab(); };
+            histBox.appendChild(item);
+          }
+
+        } else if (tab === 'habits') {
+          let habits = await dbGet('habits', []);
+          const days = 14;
+          const dates = [...Array(days)].map((_, i) => { const d = new Date(); d.setDate(d.getDate() - (days - 1 - i)); return todayKey(d); });
+          area.innerHTML = `
+        <div style="display:flex; gap:8px; margin-bottom:16px;">
+          <input class="plain" id="habit-new" placeholder="New habit e.g. Read 20 min" style="flex:1;">
+          <input class="plain" id="habit-goal" type="number" min="1" value="20" style="width:100px;" title="Monthly goal (times)">
+          <button class="small-btn" id="habit-add">Add</button>
+        </div>
+        <div id="habit-list"></div>
+      `;
+          function renderHabits() {
+            const list = area.querySelector('#habit-list');
+            if (habits.length === 0) { list.innerHTML = `<div class="empty-hint">Add a daily habit and a monthly goal to start tracking your streak.</div>`; return; }
+            list.innerHTML = '';
+            habits.forEach(h => {
+              if (h.monthlyGoal === undefined) h.monthlyGoal = 20;
+              const doneCount = dates.filter(d => h.log[d]).length;
+              const pct = Math.round(doneCount / days * 100);
+              const row = ce('div');
+              row.style.marginBottom = '16px';
+              row.innerHTML = `
+            <div class="habit-row" style="border:none; padding-bottom:4px;">
+              <div class="habit-check ${h.log[todayKey()] ? 'done' : ''}" data-h="${h.id}">${h.log[todayKey()] ? '✓' : ''}</div>
+              <div style="flex:1; font-weight:600; font-size:13.5px;">${escapeHtml(h.name)} <span style="font-weight:500; color:var(--text-dim); font-size:11px;">(goal: ${h.monthlyGoal}/mo)</span></div>
+              <div style="font-size:11.5px; color:var(--text-dim);">${doneCount}/${days} days</div>
+            </div>
+            <div class="habit-bar-wrap"><div class="habit-bar" style="width:${pct}%"></div></div>
+          `;
+              row.querySelector('.habit-check').onclick = () => {
+                h.log[todayKey()] = !h.log[todayKey()];
+                dbSet('habits', habits); renderHabits();
+              };
+              list.appendChild(row);
+            });
+          }
+          renderHabits();
+          area.querySelector('#habit-add').onclick = () => {
+            const val = area.querySelector('#habit-new').value.trim();
+            const goal = parseInt(area.querySelector('#habit-goal').value) || 20;
+            if (!val) return;
+            habits.push({ id: uid(), name: val, log: {}, monthlyGoal: goal });
+            dbSet('habits', habits);
+            area.querySelector('#habit-new').value = '';
+            renderHabits();
+          };
+
+        } else {
+          // ---- DASHBOARD ----
+          const habits = await dbGet('habits', []);
+          if (habits.length === 0) {
+            area.innerHTML = `<div class="empty-hint">Add habits in the Habits tab, then check them off daily to see your progress here — by day, month, and year.</div>`;
+            return;
+          }
+          const now = new Date();
+          const y = now.getFullYear(), mo = now.getMonth();
+          const dim = daysInMonthOf(y, mo);
+
+          // per-habit monthly goal rings
+          let ringsHtml = '<div class="dash-card"><div style="font-weight:700; margin-bottom:12px;">This month</div><div style="display:flex; gap:16px; flex-wrap:wrap;">';
+          habits.forEach(h => {
+            let count = 0;
+            for (let d = 1; d <= dim; d++) { if (h.log[y + '-' + pad2(mo + 1) + '-' + pad2(d)]) count++; }
+            const goal = h.monthlyGoal || 20;
+            const pct = Math.min(100, Math.round(count / goal * 100));
+            ringsHtml += `
+          <div style="display:flex; align-items:center; gap:10px; width:180px;">
+            <div class="ring" style="background:conic-gradient(var(--accent) ${pct * 3.6}deg, var(--surface-3) 0);">
+              <div style="background:var(--surface-2); width:46px; height:46px; border-radius:50%; display:flex; align-items:center; justify-content:center;">${pct}%</div>
+            </div>
+            <div>
+              <div style="font-weight:600; font-size:12.5px;">${escapeHtml(h.name)}</div>
+              <div style="color:var(--text-dim); font-size:11px;">${count}/${goal} this month</div>
+            </div>
+          </div>
+        `;
+          });
+          ringsHtml += '</div></div>';
+
+          // daily heatmap for current month (aggregate across habits)
+          const first = new Date(y, mo, 1);
+          const startDow = first.getDay();
+          let heatHtml = `<div class="dash-card"><div style="font-weight:700; margin-bottom:12px;">Day by day — ${now.toLocaleDateString([], { month: 'long', year: 'numeric' })}</div><div class="heat-grid">`;
+          ['S', 'M', 'T', 'W', 'T', 'F', 'S'].forEach(d => heatHtml += `<div style="text-align:center; font-size:10px; color:var(--text-faint);">${d}</div>`);
+          for (let i = 0; i < startDow; i++) heatHtml += `<div></div>`;
+          for (let d = 1; d <= dim; d++) {
+            const key = y + '-' + pad2(mo + 1) + '-' + pad2(d);
+            const doneCount = habits.filter(h => h.log[key]).length;
+            const frac = habits.length ? doneCount / habits.length : 0;
+            const bg = frac === 0 ? 'var(--surface-3)' : `rgba(var(--accent-rgb), ${0.25 + frac * 0.65})`;
+            heatHtml += `<div class="heat-cell" style="background:${bg};" title="${doneCount}/${habits.length} habits done">${d}</div>`;
+          }
+          heatHtml += `</div></div>`;
+
+          // monthly bars for the year
+          let yearHtml = `<div class="dash-card"><div style="font-weight:700; margin-bottom:12px;">Month by month — ${y}</div>`;
+          const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+          for (let m = 0; m < 12; m++) {
+            const dInM = daysInMonthOf(y, m);
+            let done = 0;
+            for (let d = 1; d <= dInM; d++) {
+              const key = y + '-' + pad2(m + 1) + '-' + pad2(d);
+              done += habits.filter(h => h.log[key]).length;
+            }
+            const possible = habits.length * dInM;
+            const pct = possible ? Math.round(done / possible * 100) : 0;
+            yearHtml += `
+          <div class="month-bar-row">
+            <div class="mlabel">${monthNames[m]}</div>
+            <div class="month-bar-track"><div class="month-bar-fill" style="width:${pct}%"></div></div>
+            <div style="width:34px; text-align:right; color:var(--text-dim);">${pct}%</div>
+          </div>
+        `;
+          }
+          yearHtml += `</div>`;
+
+          area.innerHTML = ringsHtml + heatHtml + yearHtml;
+        }
+      }
+      body.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => { tab = b.dataset.tab; renderTab(); });
+      renderTab();
+    }
+
+    /* ============================================================
+       APP: CALENDAR
+       ============================================================ */
+    async function renderCalendarApp(body, win) {
+      body.innerHTML = `
+    <div class="app-flex">
+      <div class="app-toolbar">
+        <button class="tbtn" id="cal-prev">←</button>
+        <div style="font-weight:700; font-size:13.5px; padding:0 8px;" id="cal-title"></div>
+        <button class="tbtn" id="cal-next">→</button>
+        <div class="tsep"></div>
+        <input class="plain" id="cal-evt-title" placeholder="Event/class title" style="width:160px;">
+        <input class="plain" type="date" id="cal-evt-date">
+        <input class="plain" type="time" id="cal-evt-time" style="width:100px;">
+        <button class="small-btn" id="cal-evt-add">Add</button>
+      </div>
+      <div class="app-body-scroll app-pad" id="cal-grid"></div>
+    </div>
+  `;
+      let viewDate = new Date();
+      body.querySelector('#cal-evt-date').value = todayKey();
+
+      async function render() {
+        const y = viewDate.getFullYear(), m = viewDate.getMonth();
+        body.querySelector('#cal-title').textContent = viewDate.toLocaleDateString([], { month: 'long', year: 'numeric' });
+        const events = await dbGet('calendar-events', []);
+        const first = new Date(y, m, 1);
+        const startDow = first.getDay();
+        const daysInMonth = daysInMonthOf(y, m);
+        const prevDays = new Date(y, m, 0).getDate();
+        let html = `<div class="cal-month-grid">`;
+        ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(d => html += `<div class="dow">${d}</div>`);
+        for (let i = startDow - 1; i >= 0; i--) html += `<div class="cal-cell other"><div class="dnum">${prevDays - i}</div></div>`;
+        for (let d = 1; d <= daysInMonth; d++) {
+          const key = y + '-' + pad2(m + 1) + '-' + pad2(d);
+          const isToday = key === todayKey();
+          const dayEvents = events.filter(e => e.date === key);
+          html += `<div class="cal-cell${isToday ? ' today' : ''}"><div class="dnum">${d}</div>${dayEvents.map(e => `<div class="cal-evt">${escapeHtml(e.title)}</div>`).join('')}</div>`;
+        }
+        const total = startDow + daysInMonth;
+        const trailing = (7 - (total % 7)) % 7;
+        for (let d = 1; d <= trailing; d++) html += `<div class="cal-cell other"><div class="dnum">${d}</div></div>`;
+        html += `</div>`;
+        body.querySelector('#cal-grid').innerHTML = html;
+      }
+      body.querySelector('#cal-prev').onclick = () => { viewDate.setMonth(viewDate.getMonth() - 1); render(); };
+      body.querySelector('#cal-next').onclick = () => { viewDate.setMonth(viewDate.getMonth() + 1); render(); };
+      body.querySelector('#cal-evt-add').onclick = async () => {
+        const title = body.querySelector('#cal-evt-title').value.trim();
+        const date = body.querySelector('#cal-evt-date').value;
+        const time = body.querySelector('#cal-evt-time').value;
+        if (!title || !date) return;
+        const events = await dbGet('calendar-events', []);
+        events.push({ id: uid(), title, date, time });
+        await dbSet('calendar-events', events);
+        body.querySelector('#cal-evt-title').value = '';
+        render(); refreshNowPill();
+      };
+      render();
+    }
+
+    /* ============================================================
+       APP: FLASHCARDS
+       ============================================================ */
+    async function renderFlashcardsApp(body, win) {
+      body.innerHTML = `<div class="app-pad" id="fc-root"></div>`;
+      let decks = await dbGet('flashcard-decks', null);
+      if (!decks) { decks = []; await dbSet('flashcard-decks', decks); }
+      let view = { mode: 'list', deckId: null, cardIdx: 0 };
+
+      function renderView() {
+        const root = body.querySelector('#fc-root');
+        if (view.mode === 'list') {
+          root.innerHTML = `
+        <div style="display:flex; gap:8px; margin-bottom:16px;">
+          <input class="plain" id="fc-deck-name" placeholder="New deck name" style="flex:1;">
+          <button class="small-btn" id="fc-deck-add">Create deck</button>
+        </div>
+        <div class="card-row" id="fc-decks"></div>
+      `;
+          const decksEl = root.querySelector('#fc-decks');
+          if (decks.length === 0) decksEl.innerHTML = `<div class="empty-hint">Create a deck to start adding flashcards.</div>`;
+          decks.forEach(d => {
+            const el = ce('div', 'fc-deck-card');
+            el.innerHTML = `<div style="font-weight:700; font-size:13.5px; margin-bottom:6px;">${escapeHtml(d.name)}</div><div style="font-size:11.5px; color:var(--text-dim);">${d.cards.length} cards</div>`;
+            el.onclick = () => { view = { mode: 'study', deckId: d.id, cardIdx: 0 }; renderView(); };
+            decksEl.appendChild(el);
+          });
+          root.querySelector('#fc-deck-add').onclick = () => {
+            const name = root.querySelector('#fc-deck-name').value.trim();
+            if (!name) return;
+            decks.push({ id: uid(), name, cards: [] });
+            dbSet('flashcard-decks', decks); renderView();
+          };
+        } else {
+          const deck = decks.find(d => d.id === view.deckId);
+          root.innerHTML = `
+        <button class="small-btn ghost" id="fc-back" style="margin-bottom:14px;">← All decks</button>
+        <div style="font-weight:700; font-size:15px; margin-bottom:10px;">${escapeHtml(deck.name)}</div>
+        <div style="display:flex; gap:8px; margin-bottom:14px;">
+          <input class="plain" id="fc-front" placeholder="Front (question)" style="flex:1;">
+          <input class="plain" id="fc-back-in" placeholder="Back (answer)" style="flex:1;">
+          <button class="small-btn" id="fc-card-add">Add card</button>
+        </div>
+        <div id="fc-study"></div>
+      `;
+          root.querySelector('#fc-back').onclick = () => { view = { mode: 'list' }; renderView(); };
+          root.querySelector('#fc-card-add').onclick = () => {
+            const f = root.querySelector('#fc-front').value.trim();
+            const b = root.querySelector('#fc-back-in').value.trim();
+            if (!f || !b) return;
+            deck.cards.push({ front: f, back: b });
+            dbSet('flashcard-decks', decks);
+            root.querySelector('#fc-front').value = ''; root.querySelector('#fc-back-in').value = '';
+            renderStudy();
+          };
+          function renderStudy() {
+            const studyEl = root.querySelector('#fc-study');
+            if (deck.cards.length === 0) { studyEl.innerHTML = `<div class="empty-hint">Add cards above to start studying.</div>`; return; }
+            if (view.cardIdx >= deck.cards.length) view.cardIdx = 0;
+            const card = deck.cards[view.cardIdx];
+            studyEl.innerHTML = `
+          <div class="flip-card" id="fc-flip">
+            <div class="flip-inner">
+              <div class="flip-face">${escapeHtml(card.front)}</div>
+              <div class="flip-face flip-back">${escapeHtml(card.back)}</div>
+            </div>
+          </div>
+          <div style="display:flex; justify-content:center; gap:10px;">
+            <button class="small-btn ghost" id="fc-prev">← Prev</button>
+            <span style="align-self:center; font-size:12px; color:var(--text-dim);">${view.cardIdx + 1} / ${deck.cards.length}</span>
+            <button class="small-btn ghost" id="fc-next">Next →</button>
+          </div>
+        `;
+            const flip = studyEl.querySelector('#fc-flip');
+            flip.onclick = () => flip.classList.toggle('flipped');
+            studyEl.querySelector('#fc-prev').onclick = () => { view.cardIdx = (view.cardIdx - 1 + deck.cards.length) % deck.cards.length; renderStudy(); };
+            studyEl.querySelector('#fc-next').onclick = () => { view.cardIdx = (view.cardIdx + 1) % deck.cards.length; renderStudy(); };
+          }
+          renderStudy();
+        }
+      }
+      renderView();
+    }
+
+    /* ============================================================
+       APP: QUICK NOTES (sticky notes)
+       ============================================================ */
+    async function renderStickyApp(body, win) {
+      body.innerHTML = `
+    <div class="app-flex">
+      <div class="app-toolbar"><button class="tbtn" id="sticky-add">+ New note</button></div>
+      <div id="sticky-board" class="app-body-scroll"></div>
+    </div>
+  `;
+      const colors = ['#FDCB6E', '#81ECEC', '#FAB1A0', '#A29BFE', '#55EFC4'];
+      let notes = await dbGet('sticky-notes', []);
+      function render() {
+        const board = body.querySelector('#sticky-board');
+        if (notes.length === 0) { board.innerHTML = `<div class="empty-hint">No sticky notes yet. Click "+ New note" to add one.</div>`; return; }
+        board.innerHTML = '';
+        notes.forEach(n => {
+          const el = ce('div', 'sticky');
+          el.style.background = n.color;
+          el.innerHTML = `<span class="sdel" data-id="${n.id}">✕</span><textarea placeholder="Type a note...">${escapeHtml(n.text)}</textarea>`;
+          el.querySelector('textarea').addEventListener('input', e => { n.text = e.target.value; dbSet('sticky-notes', notes); });
+          el.querySelector('.sdel').onclick = () => { notes = notes.filter(x => x.id !== n.id); dbSet('sticky-notes', notes); render(); };
+          board.appendChild(el);
+        });
+      }
+      body.querySelector('#sticky-add').onclick = () => {
+        notes.unshift({ id: uid(), text: '', color: colors[Math.floor(Math.random() * colors.length)] });
+        dbSet('sticky-notes', notes); render();
+      };
+      render();
+    }
+
+    /* ============================================================
+       APP: CLOCK (pomodoro / stopwatch)
+       ============================================================ */
+    function renderClockApp(body, win) {
+      body.innerHTML = `
+    <div class="app-flex">
+      <div class="clock-tabs">
+        <button class="tbtn active" data-t="pomo">Pomodoro</button>
+        <button class="tbtn" data-t="stopwatch">Stopwatch</button>
+      </div>
+      <div class="app-body-scroll app-pad" id="clock-body" style="text-align:center;"></div>
+    </div>
+  `;
+      let tab = 'pomo';
+      let pomoSecs = 25 * 60, pomoTotal = 25 * 60, pomoRunning = false, pomoInterval = null, pomoMode = 'focus';
+      let swSecs = 0, swRunning = false, swInterval = null;
+
+      function fmt(s) { const m = Math.floor(s / 60); const sec = s % 60; return pad2(m) + ':' + pad2(sec); }
+
+      function renderTab() {
+        body.querySelectorAll('[data-t]').forEach(b => b.classList.toggle('active', b.dataset.t === tab));
+        const area = body.querySelector('#clock-body');
+        if (tab === 'pomo') {
+          const pct = Math.round((pomoSecs / pomoTotal) * 100);
+          area.innerHTML = `
+        <div style="font-size:12px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.05em; font-weight:700; margin-top:10px;">${pomoMode === 'focus' ? 'Focus session' : 'Break'}</div>
+        <div class="pomodoro-ring" style="--pct:${pct}"><div class="pomodoro-time">${fmt(pomoSecs)}</div></div>
+        <div style="display:flex; justify-content:center; gap:10px;">
+          <button class="small-btn" id="pomo-toggle">${pomoRunning ? 'Pause' : 'Start'}</button>
+          <button class="small-btn ghost" id="pomo-reset">Reset</button>
+          <button class="small-btn ghost" id="pomo-mode">${pomoMode === 'focus' ? 'Switch to break' : 'Switch to focus'}</button>
+        </div>
+      `;
+          area.querySelector('#pomo-toggle').onclick = () => {
+            pomoRunning = !pomoRunning;
+            if (pomoRunning) {
+              pomoInterval = setInterval(() => {
+                pomoSecs--;
+                if (pomoSecs <= 0) { clearInterval(pomoInterval); pomoRunning = false; pomoSecs = 0; }
+                renderTab();
+              }, 1000);
+            } else clearInterval(pomoInterval);
+            renderTab();
+          };
+          area.querySelector('#pomo-reset').onclick = () => { clearInterval(pomoInterval); pomoRunning = false; pomoSecs = pomoTotal; renderTab(); };
+          area.querySelector('#pomo-mode').onclick = () => {
+            clearInterval(pomoInterval); pomoRunning = false;
+            pomoMode = pomoMode === 'focus' ? 'break' : 'focus';
+            pomoTotal = pomoMode === 'focus' ? 25 * 60 : 5 * 60;
+            pomoSecs = pomoTotal;
+            renderTab();
+          };
+        } else {
+          area.innerHTML = `
+        <div class="pomodoro-time" style="font-size:52px; margin:60px 0 30px;">${fmt(swSecs)}</div>
+        <div style="display:flex; justify-content:center; gap:10px;">
+          <button class="small-btn" id="sw-toggle">${swRunning ? 'Pause' : 'Start'}</button>
+          <button class="small-btn ghost" id="sw-reset">Reset</button>
+        </div>
+      `;
+          area.querySelector('#sw-toggle').onclick = () => {
+            swRunning = !swRunning;
+            if (swRunning) swInterval = setInterval(() => { swSecs++; renderTab(); }, 1000);
+            else clearInterval(swInterval);
+            renderTab();
+          };
+          area.querySelector('#sw-reset').onclick = () => { clearInterval(swInterval); swRunning = false; swSecs = 0; renderTab(); };
+        }
+      }
+      body.querySelectorAll('[data-t]').forEach(b => b.onclick = () => { tab = b.dataset.t; renderTab(); });
+      renderTab();
+    }
+
+    /* ============================================================
+       APP: BROWSER (light)
+       ============================================================ */
+    function renderBrowserApp(body, win) {
+      body.innerHTML = `
+    <div class="app-flex">
+      <div class="browser-bar">
+        <input class="plain" id="bw-url" placeholder="Search the web...">
+        <button class="small-btn" id="bw-go">Go</button>
+      </div>
+      <iframe class="browser-frame" id="bw-frame" src="https://www.bing.com"></iframe>
+    </div>
+  `;
+      function go() {
+        const q = body.querySelector('#bw-url').value.trim();
+        const frame = body.querySelector('#bw-frame');
+        frame.src = q ? `https://www.bing.com/search?q=${encodeURIComponent(q)}` : 'https://www.bing.com';
+      }
+      body.querySelector('#bw-go').onclick = go;
+      body.querySelector('#bw-url').onkeydown = e => { if (e.key === 'Enter') go(); };
+    }
+
+    /* ============================================================
+       APP: SETTINGS
+       ============================================================ */
+    function renderSettingsApp(body, win) {
+      body.innerHTML = `<div class="app-pad" id="settings-root"></div>`;
+      const root = body.querySelector('#settings-root');
+      root.innerHTML = `
+    <div style="font-family:'Space Grotesk',sans-serif; font-size:20px; font-weight:600; margin-bottom:4px;">Settings</div>
+    <div style="color:var(--text-dim); font-size:13px; margin-bottom:6px;">Signed in as ${escapeHtml(user.name)}</div>
+
+    <div class="settings-row">
+      <div><div class="settings-label">Accent color</div><div class="settings-desc">Choose a pastel accent or make your own.</div></div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;max-width:280px;">
+        <div class="color-picker" id="set-accent" style="margin:0;max-width:220px;"></div>
+        <label class="custom-color-label" title="Custom accent color"><input type="color" id="set-custom-accent" value="#C795C9"></label>
+      </div>
+    </div>
+
+    <div class="settings-row">
+      <div><div class="settings-label">Theme</div><div class="settings-desc">Pastel light is the default StudyOS theme.</div></div>
+      <div style="display:flex;gap:6px;">
+        <button class="small-btn ghost" id="set-light-theme">Light</button>
+        <button class="small-btn ghost" id="set-dark-theme">Dark</button>
+      </div>
+    </div>
+
+    <div class="settings-row">
+      <div><div class="settings-label">Wallpaper</div><div class="settings-desc">Choose a background, or upload your own photo.</div></div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; max-width:320px;" id="set-wallpaper"></div>
+    </div>
+    <div class="settings-row">
+      <div><div class="settings-label">Custom wallpaper</div><div class="settings-desc">Upload an image to use as your desktop background.</div></div>
+      <div>
+        <button class="small-btn ghost" id="set-wallpaper-upload-btn">Upload image</button>
+        <input type="file" id="set-wallpaper-upload" accept="image/*" class="hidden">
+      </div>
+    </div>
+
+    <div class="settings-row">
+      <div><div class="settings-label">Performance mode</div><div class="settings-desc">Reduces animations and blur for low-end computers.</div></div>
+      <div class="switch" id="set-perf-switch"></div>
+    </div>
+
+    <div class="settings-row" style="border-bottom:none;">
+      <div><div class="settings-label">Lock screen</div><div class="settings-desc">Return to the lock screen.</div></div>
+      <button class="small-btn ghost" onclick="lockNow()">Lock now</button>
+    </div>
+  `;
+      const accWrap = root.querySelector('#set-accent');
+      ACCENTS.forEach(a => {
+        const el = ce('div', 'color-opt' + (a.accent === user.accent ? ' selected' : ''));
+        el.style.background = a.accent;
+        el.title = a.name;
+        el.onclick = () => {
+          user.accent = a.accent; user.accent2 = a.accent2;
+          applyTheme(); dbSet('account', user);
+          accWrap.querySelectorAll('.color-opt').forEach(o => o.classList.remove('selected'));
+          el.classList.add('selected');
+        };
+        accWrap.appendChild(el);
+      });
+      const customAccent = root.querySelector('#set-custom-accent');
+      customAccent.value = user.accent || '#C795C9';
+      customAccent.oninput = () => {
+        const hex = customAccent.value;
+        const rgb = hexToRgb(hex);
+        const accent2 = rgbToHex(Math.round((rgb.r + 255) / 2), Math.round((rgb.g + 255) / 2), Math.round((rgb.b + 255) / 2));
+        user.accent = hex; user.accent2 = accent2;
+        applyTheme(); dbSet('account', user);
+        accWrap.querySelectorAll('.color-opt').forEach(o => o.classList.remove('selected'));
+      };
+      root.querySelector('#set-light-theme').onclick = () => { user.theme = 'light'; applyTheme(); dbSet('account', user); };
+      root.querySelector('#set-dark-theme').onclick = () => { user.theme = 'dark'; applyTheme(); dbSet('account', user); };
+
+      const wpWrap = root.querySelector('#set-wallpaper');
+      WALLPAPERS.filter(w => w.id !== 'custom').forEach(w => {
+        const el = ce('div', 'wallpaper-opt' + (w.id === user.wallpaperId ? ' selected' : ''));
+        el.style.backgroundImage = w.css;
+        el.title = w.id;
+        el.onclick = () => {
+          user.wallpaperId = w.id; applyTheme(); dbSet('account', user);
+          wpWrap.querySelectorAll('.wallpaper-opt').forEach(o => o.classList.remove('selected'));
+          el.classList.add('selected');
+        };
+        wpWrap.appendChild(el);
+      });
+      if (user.wallpaperId === 'custom' && user.wallpaperCustom) {
+        const el = ce('div', 'wallpaper-opt selected');
+        el.style.backgroundImage = `url(${user.wallpaperCustom})`;
+        wpWrap.appendChild(el);
+      }
+      root.querySelector('#set-wallpaper-upload-btn').onclick = () => root.querySelector('#set-wallpaper-upload').click();
+      root.querySelector('#set-wallpaper-upload').onchange = (e) => {
+        const f = e.target.files[0]; if (!f) return;
+        const r = new FileReader();
+        r.onload = () => {
+          user.wallpaperCustom = r.result;
+          user.wallpaperId = 'custom';
+          applyTheme(); dbSet('account', user);
+          const el = ce('div', 'wallpaper-opt selected');
+          el.style.backgroundImage = `url(${r.result})`;
+          wpWrap.querySelectorAll('.wallpaper-opt').forEach(o => o.classList.remove('selected'));
+          wpWrap.appendChild(el);
+        };
+        r.readAsDataURL(f);
+      };
+      const perfSw = root.querySelector('#set-perf-switch');
+      perfSw.classList.toggle('on', perfMode);
+      perfSw.onclick = () => { togglePerf(); perfSw.classList.toggle('on', perfMode); };
+    }
+  </script>
+</body>
+
+</html>
